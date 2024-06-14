@@ -1,0 +1,20 @@
+.bingo-card {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  grid-auto-rows: minmax(20px, auto);
+  width: 300px;
+  height: 300px;
+  padding: 5px;
+  background: red;
+  border-radius: 4px;
+}
+
+.bingo-item {
+  background: yellowgreen;
+}
+
+.amongus {
+  background: red;
+}
+
