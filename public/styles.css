@@ -24,6 +24,13 @@
   background-size: 100% 100%, auto;
 }
 
+.save {
+  background: lightgreen;
+}
+.load {
+  background: lightblue;
+}
+
 img {
   float: right;
 }
