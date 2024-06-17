@@ -10,20 +10,16 @@ var applyCross = function(element) {
 }
 var crossTile = function(event) {
     // No context menu when right clicking
+    event.preventDefault();
     let element = event.srcElement;
     if (element.classList.contains("bingo-item")) {
-        event.preventDefault();
         applyCross(element);
     } else {
-        console.log("GLLOOOOOBYYYEEEE");
-        console.log(element);
         applyCross(element.parentElement);
     }
 };
 var elements = document.getElementsByClassName("bingo-item");
-console.log(elements.length);
 for (var i = 0; i < elements.length; i++) {
-    console.log("gooa");
     elements[i].addEventListener('contextmenu', crossTile, false);
 }
 
