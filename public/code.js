@@ -1,14 +1,14 @@
 console.log("amongus 🤨")
 
 // Crossing tiles
-var applyCross = function(element) {
+let applyCross = function(element) {
     if (!element.classList.contains("crossed")) {
         element.classList.add("crossed");
     } else {
         element.classList.remove("crossed");
     }
 }
-var crossTile = function(event) {
+let crossTile = function(event) {
     // No context menu when right clicking
     event.preventDefault();
     let element = event.srcElement;
@@ -18,8 +18,13 @@ var crossTile = function(event) {
         applyCross(element.parentElement);
     }
 };
-var elements = document.getElementsByClassName("bingo-item");
-for (var i = 0; i < elements.length; i++) {
+let elements = document.getElementsByClassName("bingo-item");
+for (let i = 0; i < elements.length; i++) {
     elements[i].addEventListener('contextmenu', crossTile, false);
 }
+
+// Saving / Loading bingo board
+
+// Get text from bingo card
+
 
