@@ -23,8 +23,7 @@ Array.from(elements).forEach((element) => {
   element.addEventListener('contextmenu', crossTile);
 });
 
-// Saving / Loading bingo board
-
+// Saving / Loading
 // Get text from bingo card
 // Ordering works, according to spec
 function getBingoCardState (bingoCard) {
@@ -39,7 +38,20 @@ function getBingoCardState (bingoCard) {
   return entries;
 }
 
-function updateSaveBingoCardLinks (bingoCardContainer) {
+function setBingoCardState (bingoCardContainer, state) {
+  let relevantTextElements = [];
+  let textElements = document.getElementsByClassName("bingo-text");
+  Array.from(textElements).forEach((element) => {
+    if (element.parentElement.parentElement.parentElement == bingoCardContainer) {
+      relevantTextElements.push(element);
+    }
+  });
+  for (let i = 0; i < relevantTextElements.length; i++) { 
+    relevantTextElements[i].innerHTML = state[i];
+  }
+}
+
+function updateSaveBingoCardLink (bingoCardContainer) {
   let saveLinks = document.getElementsByClassName("save");
   Array.from(saveLinks).forEach((element) => {
     if (element.parentElement == bingoCardContainer) {
@@ -53,11 +65,23 @@ function updateSaveBingoCardLinks (bingoCardContainer) {
 }
 
 // Observe relevant elements for changes, and update links when changes happen
-let bingoCards = document.getElementsByClassName("bingo-text");
-Array.from(bingoCards).forEach((element) => {
+let textElements = document.getElementsByClassName("bingo-text");
+Array.from(textElements).forEach((element) => {
   element.addEventListener("input", () => {
-      updateSaveBingoCardLinks(element.parentElement.parentElement.parentElement);
+      updateSaveBingoCardLink(element.parentElement.parentElement.parentElement);
   });
-  updateSaveBingoCardLinks(element.parentElement.parentElement.parentElement);
+  updateSaveBingoCardLink(element.parentElement.parentElement.parentElement);
+});
+
+// Add loading functionality
+let loadElements = document.getElementsByClassName("load");
+Array.from(loadElements).forEach((element) => {
+  element.addEventListener("change", () => {
+    if (element.files.length >= 1) {
+      element.files[0].text().then((v) => {
+        setBingoCardState(element.parentElement, JSON.parse(v).card);
+      });
+    }
+  });
 });
 
