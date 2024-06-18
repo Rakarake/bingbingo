@@ -35,15 +35,29 @@ function getBingoCardState (bingoCard) {
     if (bingoEntry.parentElement.parentElement.parentElement == bingoCard) {
       entries.push(bingoEntry.innerHTML);
     }
-    console.log(bingoEntry.innerHTML);
   });
   return entries;
 }
 
-let saveButtons = document.getElementsByClassName("save");
-Array.from(saveButtons).forEach((button) => {
-  button.onclick = () => {
-    console.log(getBingoCardState(button.parentElement));
-  }
+function updateSaveBingoCardLinks (bingoCardContainer) {
+  let saveLinks = document.getElementsByClassName("save");
+  Array.from(saveLinks).forEach((element) => {
+    if (element.parentElement == bingoCardContainer) {
+      const json = { card: getBingoCardState(element.parentElement) };
+      const jsonString = JSON.stringify(json);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      element.href = URL.createObjectURL(blob);
+      element.download = 'bingo-card.json';  // Filename of download
+    }
+  });
+}
+
+// Observe relevant elements for changes, and update links when changes happen
+let bingoCards = document.getElementsByClassName("bingo-text");
+Array.from(bingoCards).forEach((element) => {
+  element.addEventListener("input", () => {
+      updateSaveBingoCardLinks(element.parentElement.parentElement.parentElement);
+  });
+  updateSaveBingoCardLinks(element.parentElement.parentElement.parentElement);
 });
 
