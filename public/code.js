@@ -11,15 +11,17 @@ function applyCross(element) {
 function crossTile(event) {
     // No context menu when right clicking
     event.preventDefault();
-    let element = event.srcElement;
-    if (element.classList.contains("bingo-item")) {
+    // Recursively go upwards in the tree and find the outer tile element
+    let tryParent = (element) => { 
+      if (element.classList.contains("bingo-item")) {
         applyCross(element);
-    } else {
-        applyCross(element.parentElement);
-    }
+      } else {
+        tryParent(element.parentElement);
+      }
+    };
+    tryParent(event.srcElement);
 };
-let elements = document.getElementsByClassName("bingo-item");
-Array.from(elements).forEach((element) => {
+document.querySelectorAll(".bingo-item").forEach((element) => {
   element.addEventListener('contextmenu', crossTile);
 });
 
