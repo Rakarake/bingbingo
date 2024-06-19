@@ -29,9 +29,8 @@ document.querySelectorAll(".bingo-item").forEach((element) => {
 // Get text from bingo card
 // Ordering works, according to spec
 function getBingoCardState (bingoCard) {
-  let bingoEntries = document.getElementsByClassName("bingo-text");
   const entries = [];
-  Array.from(bingoEntries).forEach((bingoEntry) => {
+  document.querySelectorAll(".bingo-text").forEach((bingoEntry) => {
     // Only those that are under bingoCard
     if (bingoEntry.parentElement.parentElement.parentElement == bingoCard) {
       entries.push(bingoEntry.innerHTML);
@@ -42,8 +41,7 @@ function getBingoCardState (bingoCard) {
 
 function setBingoCardState (bingoCardContainer, state) {
   let relevantTextElements = [];
-  let textElements = document.getElementsByClassName("bingo-text");
-  Array.from(textElements).forEach((element) => {
+  document.querySelectorAll(".bingo-text").forEach((element) => {
     if (element.parentElement.parentElement.parentElement == bingoCardContainer) {
       relevantTextElements.push(element);
     }
@@ -54,8 +52,7 @@ function setBingoCardState (bingoCardContainer, state) {
 }
 
 function updateSaveBingoCardLink (bingoCardContainer) {
-  let saveLinks = document.getElementsByClassName("save");
-  Array.from(saveLinks).forEach((element) => {
+  document.querySelectorAll(".save").forEach((element) => {
     if (element.parentElement == bingoCardContainer) {
       const json = { card: getBingoCardState(element.parentElement) };
       const jsonString = JSON.stringify(json);
@@ -67,8 +64,7 @@ function updateSaveBingoCardLink (bingoCardContainer) {
 }
 
 // Observe relevant elements for changes, and update links when changes happen
-let textElements = document.getElementsByClassName("bingo-text");
-Array.from(textElements).forEach((element) => {
+document.querySelectorAll(".bingo-text").forEach((element) => {
   element.addEventListener("input", () => {
       updateSaveBingoCardLink(element.parentElement.parentElement.parentElement);
   });
@@ -76,8 +72,7 @@ Array.from(textElements).forEach((element) => {
 });
 
 // Add loading functionality
-let loadElements = document.getElementsByClassName("load");
-Array.from(loadElements).forEach((element) => {
+document.querySelectorAll(".load").forEach((element) => {
   element.addEventListener("change", () => {
     if (element.files.length >= 1) {
       element.files[0].text().then((v) => {
