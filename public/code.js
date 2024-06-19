@@ -33,7 +33,7 @@ function getBingoCardState (bingoCard) {
   document.querySelectorAll(".bingo-text").forEach((bingoEntry) => {
     // Only those that are under bingoCard
     if (bingoEntry.parentElement.parentElement.parentElement == bingoCard) {
-      entries.push(bingoEntry.innerHTML);
+      entries.push(bingoEntry.innerText);
     }
   });
   return entries;
@@ -47,7 +47,7 @@ function setBingoCardState (bingoCardContainer, state) {
     }
   });
   for (let i = 0; i < Math.min(relevantTextElements.length, state.length); i++) { 
-    relevantTextElements[i].innerHTML = state[i];
+    relevantTextElements[i].innerText = state[i];
   }
 }
 
@@ -77,6 +77,7 @@ document.querySelectorAll(".load").forEach((element) => {
     if (element.files.length >= 1) {
       element.files[0].text().then((v) => {
         setBingoCardState(element.parentElement, JSON.parse(v).card);
+        updateSaveBingoCardLink(element.parentElement);
       });
     }
   });
