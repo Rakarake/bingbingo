@@ -46,7 +46,7 @@ function setBingoCardState (bingoCardContainer, state) {
       relevantTextElements.push(element);
     }
   });
-  for (let i = 0; i < relevantTextElements.length; i++) { 
+  for (let i = 0; i < Math.min(relevantTextElements.length, state.length); i++) { 
     relevantTextElements[i].innerHTML = state[i];
   }
 }
