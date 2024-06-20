@@ -12,7 +12,7 @@ function crossTile(event) {
     // No context menu when right clicking
     event.preventDefault();
     // Recursively go upwards in the tree and find the outer tile element
-    let tryParent = (element) => { 
+    let tryParent = (element) => {
       if (element.classList.contains("bingo-item")) {
         applyCross(element);
       } else {
@@ -21,6 +21,7 @@ function crossTile(event) {
     };
     tryParent(event.srcElement);
 };
+
 document.querySelectorAll(".bingo-item").forEach((element) => {
   element.addEventListener('contextmenu', crossTile);
 });
@@ -46,7 +47,7 @@ function setBingoCardState (bingoCardContainer, state) {
       relevantTextElements.push(element);
     }
   });
-  for (let i = 0; i < Math.min(relevantTextElements.length, state.length); i++) { 
+  for (let i = 0; i < Math.min(relevantTextElements.length, state.length); i++) {
     relevantTextElements[i].innerText = state[i];
   }
 }
@@ -80,6 +81,50 @@ document.querySelectorAll(".load").forEach((element) => {
         updateSaveBingoCardLink(element.parentElement);
       });
     }
+  });
+});
+
+// Bingo element to use when generating new bingo cards
+const emptyBingoTile = document.createElement("div");
+emptyBingoTile.classList.add("bingo-item");
+const emptyBingoTileText = document.createElement("div");
+emptyBingoTileText.innerText = "🦆";
+emptyBingoTileText.classList.add("bingo-text");
+emptyBingoTileText.setAttribute("contenteditable", "true");
+emptyBingoTile.append(emptyBingoTileText);
+
+// Create a bingo card of a size
+function createBingoCard (bingoCard, size) {
+  // Remove old elements
+  removeAllChildren(bingoCard);
+  // Update CSS
+  console.log(size);
+  bingoCard.style.gridTemplateColumns = "repeat(".concat(size, ", minmax(0, 1fr))");
+  // Add new elements
+  for (let i = 0; i < (size*size); i++) {
+    const newNode = emptyBingoTile.cloneNode(true);
+    bingoCard.appendChild(newNode);
+    newNode.addEventListener('contextmenu', crossTile);
+  }
+  updateSaveBingoCardLink(bingoCard.parentElement);
+}
+// Helper
+function removeAllChildren(element) {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
+  }
+}
+
+// Remake bingo card when size is changed
+document.querySelectorAll(".size").forEach((element) => {
+  element.addEventListener("change", () => {
+    element.parentElement.childNodes.forEach((child) => {
+      if (child.classList && child.classList.contains("bingo-card")) {
+        removeAllChildren(child);
+        createBingoCard(child, element.value);
+      }
+    });
+    //removeAllChildren();
   });
 });
 
