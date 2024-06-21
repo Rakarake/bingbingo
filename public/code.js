@@ -1,59 +1,11 @@
 console.log("amongus 🤨")
 
-// Crossing tiles
-function applyCross(element) {
-    if (!element.classList.contains("crossed")) {
-        element.classList.add("crossed");
-    } else {
-        element.classList.remove("crossed");
-    }
-}
-function crossTile(event) {
-    // No context menu when right clicking
-    event.preventDefault();
-    // Recursively go upwards in the tree and find the outer tile element
-    let tryParent = (element) => {
-      if (element.classList.contains("bingo-item")) {
-        applyCross(element);
-      } else {
-        tryParent(element.parentElement);
-      }
-    };
-    tryParent(event.srcElement);
-};
-document.querySelectorAll(".bingo-item").forEach((element) => {
-  element.addEventListener('contextmenu', crossTile);
-});
-
-
-// Tile initial setup, add relevant event listeners to bingo tile
-function tileInitialSetup(element) {
-  // Setup crossing tiles
-  element.addEventListener("contextmenu", crossTile);
-  // Setup updating the save-link
-  element.childNodes.forEach((child) => {
-    if (child.classList && child.classList.contains("bingo-text")) {
-      child.addEventListener("input", () => {
-        updateSaveBingoCardLink(child.parentElement.parentElement.parentElement);
-      });
-    }
-  });
-}
-// Apply initial setup to exsisting tiles
-document.querySelectorAll(".bingo-item").forEach((element) => {
-  tileInitialSetup(element);
-});
-
-// Saving / Loading
 // Get text from bingo card
 // Ordering works, according to spec
 function getBingoCardState (bingoCard) {
   const entries = [];
-  document.querySelectorAll(".bingo-text").forEach((bingoEntry) => {
-    // Only those that are under bingoCard
-    if (bingoEntry.parentElement.parentElement.parentElement == bingoCard) {
-      entries.push(bingoEntry.innerText);
-    }
+  bingoCard.querySelectorAll(".bingo-text").forEach((bingoEntry) => {
+    entries.push(bingoEntry.innerText);
   });
   return entries;
 }
@@ -71,26 +23,6 @@ function updateSaveBingoCardLink (bingoCardContainer) {
   saveElement.href = URL.createObjectURL(blob);
   saveElement.download = 'bingo-card.json';  // Filename of download
 }
-// Update link when application starts
-document.querySelectorAll(".bingo-card-container").forEach((element) => {
-  updateSaveBingoCardLink(element);
-});
-
-
-// Add loading functionality
-document.querySelectorAll(".load").forEach((element) => {
-  element.addEventListener("change", () => {
-    if (element.files.length >= 1) {
-      element.files[0].text().then((v) => {
-        const state = JSON.parse(v);
-        const bingoCard = element.parentElement;
-        removeAllChildren(bingoCard);
-        createBingoCard(bingoCard, state.size, state.card);
-        updateSaveBingoCardLink(bingoCard);
-      });
-    }
-  });
-});
 
 // Bingo element to use when generating new bingo cards
 const emptyBingoTile = document.createElement("div");
@@ -116,10 +48,9 @@ function createBingoCard (bingoCard, size, contents) {
     if (contents && i < contents.length) {
       newNode.innerText = contents[i];
     }
-    tileInitialSetup(newNode);
   }
-  updateSaveBingoCardLink(bingoCard.parentElement);
 }
+
 // Helper
 function removeAllChildren(element) {
   while (element.firstChild) {
@@ -127,15 +58,53 @@ function removeAllChildren(element) {
   }
 }
 
-// Remake bingo card when size is changed
-document.querySelectorAll(".size").forEach((element) => {
-  element.addEventListener("change", () => {
-    element.parentElement.childNodes.forEach((child) => {
-      if (child.classList && child.classList.contains("bingo-card")) {
-        removeAllChildren(child);
-        createBingoCard(child, element.value);
+// Set up all functionality for bingo card controls
+function setUpBingoCardControls(bingoCardContainer) {
+  const bingoCard = bingoCardContainer.querySelector(".bingo-card");
+
+  // Size: remake bingo card when size is changed
+  const sizeElement = bingoCardContainer.querySelector(".size");
+  sizeElement.addEventListener("change", () => {
+    removeAllChildren(bingoCard);
+    createBingoCard(bingoCard, sizeElement.value);
+    setUpBingoCardControls(bingoCardContainer);
+  });
+
+  // Load: remake bingo card according to specified file
+  const loadElement = bingoCardContainer.querySelector(".load");
+  loadElement.addEventListener("change", () => {
+    if (loadElement.files.length >= 1) {
+      loadElement.files[0].text().then((v) => {
+        const state = JSON.parse(v);
+        removeAllChildren(bingoCard);
+        createBingoCard(bingoCard, state.size, state.card);
+        setUpBingoCardControls(bingoCardContainer);
+      });
+    }
+  });
+
+  // Save: update the link as well
+  updateSaveBingoCardLink(bingoCardContainer);
+
+  // Tile setup
+  bingoCard.querySelectorAll(".bingo-item").forEach((element) => {
+    // Crossing
+    element.addEventListener("contextmenu", (event) => {
+      event.preventDefault();
+      if (!element.classList.contains("crossed")) {
+        element.classList.add("crossed");
+      } else {
+        element.classList.remove("crossed");
       }
     });
+    // Update save link on change
+    element.querySelector(".bingo-text").addEventListener("input", () => {
+      updateSaveBingoCardLink(bingoCardContainer);
+    });
   });
+}
+// Set up controls when app starts
+document.querySelectorAll(".bingo-card-container").forEach((element) => {
+  setUpBingoCardControls(element);
 });
 
