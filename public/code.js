@@ -32,7 +32,6 @@ function tileInitialSetup(element) {
   element.addEventListener("contextmenu", crossTile);
   // Setup updating the save-link
   element.childNodes.forEach((child) => {
-    console.log("glee");
     if (child.classList && child.classList.contains("bingo-text")) {
       child.addEventListener("input", () => {
         updateSaveBingoCardLink(child.parentElement.parentElement.parentElement);
@@ -59,29 +58,18 @@ function getBingoCardState (bingoCard) {
   return entries;
 }
 
-function setBingoCardState (bingoCardContainer, state) {
-  let relevantTextElements = [];
-  document.querySelectorAll(".bingo-text").forEach((element) => {
-    if (element.parentElement.parentElement.parentElement == bingoCardContainer) {
-      relevantTextElements.push(element);
-    }
-  });
-  for (let i = 0; i < Math.min(relevantTextElements.length, state.length); i++) {
-    relevantTextElements[i].innerText = state[i];
-  }
-}
-
 // Update the link that downloads the bingo card state
 function updateSaveBingoCardLink (bingoCardContainer) {
-  document.querySelectorAll(".save").forEach((element) => {
-    if (element.parentElement == bingoCardContainer) {
-      const json = { card: getBingoCardState(element.parentElement) };
-      const jsonString = JSON.stringify(json);
-      const blob = new Blob([jsonString], { type: 'application/json' });
-      element.href = URL.createObjectURL(blob);
-      element.download = 'bingo-card.json';  // Filename of download
-    }
-  });
+  const bingoCard = bingoCardContainer.querySelector(".bingo-card");
+  const saveElement = bingoCardContainer.querySelector(".save");
+  const json = {
+    card: getBingoCardState(bingoCardContainer),
+    size: bingoCard.getAttribute("data-bingo-card-size"),
+  };
+  const jsonString = JSON.stringify(json);
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  saveElement.href = URL.createObjectURL(blob);
+  saveElement.download = 'bingo-card.json';  // Filename of download
 }
 // Update link when application starts
 document.querySelectorAll(".bingo-card-container").forEach((element) => {
@@ -94,8 +82,11 @@ document.querySelectorAll(".load").forEach((element) => {
   element.addEventListener("change", () => {
     if (element.files.length >= 1) {
       element.files[0].text().then((v) => {
-        setBingoCardState(element.parentElement, JSON.parse(v).card);
-        updateSaveBingoCardLink(element.parentElement);
+        const state = JSON.parse(v);
+        const bingoCard = element.parentElement;
+        removeAllChildren(bingoCard);
+        createBingoCard(bingoCard, state.size, state.card);
+        updateSaveBingoCardLink(bingoCard);
       });
     }
   });
@@ -111,14 +102,20 @@ emptyBingoTileText.setAttribute("contenteditable", "true");
 emptyBingoTile.append(emptyBingoTileText);
 
 // Create a bingo card of a size
-function createBingoCard (bingoCard, size) {
+// Optional argument of the contents of the elements
+function createBingoCard (bingoCard, size, contents) {
   // Update CSS
-  console.log(size);
   bingoCard.style.gridTemplateColumns = "repeat(".concat(size, ", minmax(0, 1fr))");
+  // Set the size attribute
+  bingoCard.setAttribute("data-bingo-card-size", size);
   // Add new elements
   for (let i = 0; i < (size*size); i++) {
     const newNode = emptyBingoTile.cloneNode(true);
     bingoCard.appendChild(newNode);
+    // Set contents if it is provided
+    if (contents && i < contents.length) {
+      newNode.innerText = contents[i];
+    }
     tileInitialSetup(newNode);
   }
   updateSaveBingoCardLink(bingoCard.parentElement);
@@ -139,7 +136,6 @@ document.querySelectorAll(".size").forEach((element) => {
         createBingoCard(child, element.value);
       }
     });
-    //removeAllChildren();
   });
 });
 
