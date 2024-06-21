@@ -8,3 +8,6 @@ Drag and drop: https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Dr
 # Feature-creep
 * LIVE bingo cards, cards are updated server side and streamed to clients.
 
+# TODO
+* Make updateSaveBingoCardLink faster
+

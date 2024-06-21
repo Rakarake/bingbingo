@@ -21,9 +21,28 @@ function crossTile(event) {
     };
     tryParent(event.srcElement);
 };
-
 document.querySelectorAll(".bingo-item").forEach((element) => {
   element.addEventListener('contextmenu', crossTile);
+});
+
+
+// Tile initial setup, add relevant event listeners to bingo tile
+function tileInitialSetup(element) {
+  // Setup crossing tiles
+  element.addEventListener("contextmenu", crossTile);
+  // Setup updating the save-link
+  element.childNodes.forEach((child) => {
+    console.log("glee");
+    if (child.classList && child.classList.contains("bingo-text")) {
+      child.addEventListener("input", () => {
+        updateSaveBingoCardLink(child.parentElement.parentElement.parentElement);
+      });
+    }
+  });
+}
+// Apply initial setup to exsisting tiles
+document.querySelectorAll(".bingo-item").forEach((element) => {
+  tileInitialSetup(element);
 });
 
 // Saving / Loading
@@ -52,6 +71,7 @@ function setBingoCardState (bingoCardContainer, state) {
   }
 }
 
+// Update the link that downloads the bingo card state
 function updateSaveBingoCardLink (bingoCardContainer) {
   document.querySelectorAll(".save").forEach((element) => {
     if (element.parentElement == bingoCardContainer) {
@@ -63,14 +83,11 @@ function updateSaveBingoCardLink (bingoCardContainer) {
     }
   });
 }
-
-// Observe relevant elements for changes, and update links when changes happen
-document.querySelectorAll(".bingo-text").forEach((element) => {
-  element.addEventListener("input", () => {
-      updateSaveBingoCardLink(element.parentElement.parentElement.parentElement);
-  });
-  updateSaveBingoCardLink(element.parentElement.parentElement.parentElement);
+// Update link when application starts
+document.querySelectorAll(".bingo-card-container").forEach((element) => {
+  updateSaveBingoCardLink(element);
 });
+
 
 // Add loading functionality
 document.querySelectorAll(".load").forEach((element) => {
@@ -95,8 +112,6 @@ emptyBingoTile.append(emptyBingoTileText);
 
 // Create a bingo card of a size
 function createBingoCard (bingoCard, size) {
-  // Remove old elements
-  removeAllChildren(bingoCard);
   // Update CSS
   console.log(size);
   bingoCard.style.gridTemplateColumns = "repeat(".concat(size, ", minmax(0, 1fr))");
@@ -104,7 +119,7 @@ function createBingoCard (bingoCard, size) {
   for (let i = 0; i < (size*size); i++) {
     const newNode = emptyBingoTile.cloneNode(true);
     bingoCard.appendChild(newNode);
-    newNode.addEventListener('contextmenu', crossTile);
+    tileInitialSetup(newNode);
   }
   updateSaveBingoCardLink(bingoCard.parentElement);
 }
