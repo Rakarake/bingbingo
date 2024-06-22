@@ -22,22 +22,3 @@
   background-size: 100% 100%;
 }
 
-.save {
-  background: lightgreen;
-}
-.load {
-  background: lightblue;
-}
-
-img {
-  float: right;
-}
-
-textarea {
-    text-align-last: center;
-}
-
-.amongus {
-  background: red;
-}
-

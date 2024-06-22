@@ -88,16 +88,7 @@ function setUpBingoCardControls(bingoCardContainer) {
 
   // STYLING
   // Card size
-  const styleCardSizeElement = bingoCardContainer.querySelector(".style-card-size");
-  styleCardSizeElement.addEventListener("change", () => {
-    bingoCard.style.width = styleCardSizeElement.value.concat("px");
-    bingoCard.style.height = styleCardSizeElement.value.concat("px");
-  });
-  // Card corner radius
-  const styleCardCornerRadius = bingoCardContainer.querySelector(".style-card-corner-radius");
-  styleCardCornerRadius.addEventListener("change", () => {
-    console.log("gooo");
-    bingoCard.style.borderRadius = styleCardCornerRadius.value.concat("px");
+  bingoCard.querySelector(".style-card-size").forEach((element) => {
   });
 
   // Tile setup

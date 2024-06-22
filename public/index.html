@@ -21,7 +21,14 @@
           <div class="bingo-item"><div class="bingo-text" contenteditable="true">8</div></div>
           <div class="bingo-item"><div class="bingo-text" contenteditable="true">9</div></div>
         </div>
-          Board size - <select class="size" name="pets" id="pet-select">
+          Load board:
+          <input class="load" type="file">
+          <br>
+          Save board:
+          <a class="save">Download</a>
+          <br>
+          Number of tiles wide:
+          <select class="size">
             <option value="3">3x3</option>
             <option value="4">4x4</option>
             <option value="5">5x5</option>
@@ -30,14 +37,26 @@
             <option value="8">8x8</option>
           </select>
           <br>
-          Load board - <input class="load" type="file">
+          <h2>Styling</h2>
+          Card size:
+          <input type="number" min="50" class="style-card-size">
           <br>
-          Save board - <a class="save">Download</a>
+          Card background:
+          <input type="file" class="style-card-background">
+          <br>
+          Tile background:
+          <input type="file" class="style-tile-background">
+          <br>
+          Card corner radius:
+          <input type="number" class="style-card-corner-radius">
+          <br>
+          Tile corner radius:
+          <input type="number" class="style-tile-corner-radius">
       </div>
       <br>
       <footer>
         bingbingo© is MDF copyright!
-        LISENCE: <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GPLv3</a>
+        LISENCE: <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">AGPLv3</a>
       </footer>
     </body>
 </html>
