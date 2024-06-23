@@ -48,7 +48,26 @@ function createBingoCard (bingoCard, size, contents) {
     if (contents && i < contents.length) {
       newNode.innerText = contents[i];
     }
+    tileSetup(newNode);
   }
+}
+
+// Set up event listeners
+function tileSetup(element) {
+  const bingoCardContainer = element.parentElement.parentElement;
+  // Crossing
+  element.addEventListener("contextmenu", (event) => {
+    event.preventDefault();
+    if (!element.classList.contains("crossed")) {
+      element.classList.add("crossed");
+    } else {
+      element.classList.remove("crossed");
+    }
+  });
+  // Update save link on change
+  element.querySelector(".bingo-text").addEventListener("input", () => {
+    updateSaveBingoCardLink(bingoCardContainer);
+  });
 }
 
 // Helper
@@ -67,7 +86,6 @@ function setUpBingoCardControls(bingoCardContainer) {
   sizeElement.addEventListener("change", () => {
     removeAllChildren(bingoCard);
     createBingoCard(bingoCard, sizeElement.value);
-    setUpBingoCardControls(bingoCardContainer);
   });
 
   // Load: remake bingo card according to specified file
@@ -78,13 +96,17 @@ function setUpBingoCardControls(bingoCardContainer) {
         const state = JSON.parse(v);
         removeAllChildren(bingoCard);
         createBingoCard(bingoCard, state.size, state.card);
-        setUpBingoCardControls(bingoCardContainer);
       });
     }
   });
 
   // Save: update the link as well
   updateSaveBingoCardLink(bingoCardContainer);
+
+  // Tile setup
+  bingoCard.querySelectorAll(".bingo-item").forEach((element) => {
+    tileSetup(element);
+  });
 
   // STYLING
   // Card size
@@ -96,25 +118,7 @@ function setUpBingoCardControls(bingoCardContainer) {
   // Card corner radius
   const styleCardCornerRadius = bingoCardContainer.querySelector(".style-card-corner-radius");
   styleCardCornerRadius.addEventListener("change", () => {
-    console.log("gooo");
     bingoCard.style.borderRadius = styleCardCornerRadius.value.concat("px");
-  });
-
-  // Tile setup
-  bingoCard.querySelectorAll(".bingo-item").forEach((element) => {
-    // Crossing
-    element.addEventListener("contextmenu", (event) => {
-      event.preventDefault();
-      if (!element.classList.contains("crossed")) {
-        element.classList.add("crossed");
-      } else {
-        element.classList.remove("crossed");
-      }
-    });
-    // Update save link on change
-    element.querySelector(".bingo-text").addEventListener("input", () => {
-      updateSaveBingoCardLink(bingoCardContainer);
-    });
   });
 }
 // Set up controls when app starts
