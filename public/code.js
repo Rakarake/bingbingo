@@ -33,20 +33,19 @@ emptyBingoTileText.classList.add("bingo-text");
 emptyBingoTileText.setAttribute("contenteditable", "true");
 emptyBingoTile.append(emptyBingoTileText);
 
-// Create a bingo card of a size
-// Optional argument of the contents of the elements
-function createBingoCard (bingoCard, size, contents) {
+// Create a bingo card from a state, only required field is size
+function createBingoCard (bingoCard, state) {
   // Update CSS
-  bingoCard.style.gridTemplateColumns = "repeat(".concat(size, ", minmax(0, 1fr))");
+  bingoCard.style.gridTemplateColumns = "repeat(".concat(state.size, ", minmax(0, 1fr))");
   // Set the size attribute
-  bingoCard.setAttribute("data-bingo-card-size", size);
+  bingoCard.setAttribute("data-bingo-card-size", state.size);
   // Add new elements
-  for (let i = 0; i < (size*size); i++) {
+  for (let i = 0; i < (state.size*state.size); i++) {
     const newNode = emptyBingoTile.cloneNode(true);
     bingoCard.appendChild(newNode);
     // Set contents if it is provided
-    if (contents && i < contents.length) {
-      newNode.innerText = contents[i];
+    if (state.card && i < state.card.length) {
+      newNode.querySelector(".bingo-text").innerText = state.card[i];
     }
     tileSetup(newNode);
   }
@@ -85,7 +84,7 @@ function setUpBingoCardControls(bingoCardContainer) {
   const sizeElement = bingoCardContainer.querySelector(".size");
   sizeElement.addEventListener("change", () => {
     removeAllChildren(bingoCard);
-    createBingoCard(bingoCard, sizeElement.value);
+    createBingoCard(bingoCard, { size: sizeElement.value });
   });
 
   // Load: remake bingo card according to specified file
@@ -95,7 +94,7 @@ function setUpBingoCardControls(bingoCardContainer) {
       loadElement.files[0].text().then((v) => {
         const state = JSON.parse(v);
         removeAllChildren(bingoCard);
-        createBingoCard(bingoCard, state.size, state.card);
+        createBingoCard(bingoCard, state);
       });
     }
   });
@@ -119,6 +118,11 @@ function setUpBingoCardControls(bingoCardContainer) {
   const styleCardCornerRadius = bingoCardContainer.querySelector(".style-card-corner-radius");
   styleCardCornerRadius.addEventListener("change", () => {
     bingoCard.style.borderRadius = styleCardCornerRadius.value.concat("px");
+  });
+  // Tile corner radius
+  const styleTileCornerRadius = bingoCardContainer.querySelector(".style-tile-corner-radius");
+  styleCardCornerRadius.addEventListener("change", () => {
+    // TODO
   });
 }
 // Set up controls when app starts
