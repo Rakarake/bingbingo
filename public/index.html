@@ -9,49 +9,37 @@
     <body>
       <h1>The BING 🗿 bingo!</h1>
       <p>Right click/touch-and-hold to cross for one step closer to BINGO</p>
-      <div class="bingo-card-container">
-        <div class="bingo-card" data-bingo-card-size="3">
-          <div class="bingo-item"><div class="bingo-text" contenteditable="true">Hot springs</div><img src="bread.png" width="40" height="40"></div>
-          <div class="bingo-item"><div class="bingo-text" contenteditable="true">Truck kun, kaboom kyyysshhh, galoonk, bongk</div></div>
-          <div class="bingo-item"><div class="bingo-text" contenteditable="true">3</div></div>
-          <div class="bingo-item"><div class="bingo-text" contenteditable="true">4</div></div>
-          <div class="bingo-item"><div class="bingo-text" contenteditable="true">5</div></div>
-          <div class="bingo-item"><div class="bingo-text" contenteditable="true">6</div></div>
-          <div class="bingo-item"><div class="bingo-text" contenteditable="true">7</div></div>
-          <div class="bingo-item"><div class="bingo-text" contenteditable="true">8</div></div>
-          <div class="bingo-item"><div class="bingo-text" contenteditable="true">9</div></div>
-        </div>
-          Load board:
-          <input class="load" type="file">
-          <br>
-          Save board:
-          <a class="save">Download</a>
-          <br>
-          Number of tiles wide:
-          <select class="size">
-            <option value="3">3x3</option>
-            <option value="4">4x4</option>
-            <option value="5">5x5</option>
-            <option value="6">6x6</option>
-            <option value="7">7x7</option>
-            <option value="8">8x8</option>
-          </select>
-          <br>
-          <h2>Styling</h2>
-          Card size:
-          <input type="number" min="50" class="style-card-size">
-          <br>
-          Card background:
-          <input type="file" class="style-card-background">
-          <br>
-          Tile background:
-          <input type="file" class="style-tile-background">
-          <br>
-          Card corner radius:
-          <input type="number" class="style-card-corner-radius">
-          <br>
-          Tile corner radius:
-          <input type="number" class="style-tile-corner-radius">
+      <div class="card">
+        <div class="grid"></div>
+        Load board:
+        <input class="load" type="file">
+        <br>
+        Save board:
+        <a class="save">Download</a>
+        <br>
+        Number of tiles wide:
+        <select class="size">
+          <option value="3">3x3</option>
+          <option value="4">4x4</option>
+          <option value="5">5x5</option>
+          <option value="6">6x6</option>
+          <option value="7">7x7</option>
+          <option value="8">8x8</option>
+        </select>
+        <br>
+        <h2>Styling</h2>
+        Card width:
+        <input type="number" min="50" class="style-width">
+        <br>
+        Card height:
+        <input type="number" min="50" class="style-height">
+        <br>
+        Card background color:
+        <input type="color" class="style-backgroundColor">
+        <br>
+        Card border radius:
+        <input type="number" class="style-cornerRadius">
+        <br>
       </div>
       <br>
       <footer>

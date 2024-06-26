@@ -1,10 +1,7 @@
-.bingo-card {
+.grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
   grid-auto-rows: auto;
-  width: 400px;
-  height: 400px;
   padding: 5px;
   background: pink;
   border-radius: 4px;
