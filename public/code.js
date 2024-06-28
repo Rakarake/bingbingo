@@ -19,10 +19,9 @@ const defaultCard = {
       backgroundColor: "lightyellow",
     },
     item: {
-      backgroundColor: "lightblue",
+      backgroundColor: "lightpink",
     },
     card: {
-      backgroundColor: "lightgreen",
     },
   },
 }
@@ -51,13 +50,16 @@ function applyStyle(f, e, v) {
 // name: name of the type of controls, say 'size'
 function hookUpStyleControls(card, element, elementName, name, f) {
   const state = getState(card);
-  const c = card.querySelector(".style-".concat(elementName).concat("-").concat(name));
-  c.addEventListener("change", () => {
-    // Change the styling immediately
-    applyStyle(f, element, c.value);
-    // Set state
-    state.style[elementName][name] = c.value;
-  });
+  if (state.style[elementName][name] != undefined) {
+    const state = getState(card);
+    const c = card.querySelector(".style-".concat(elementName).concat("-").concat(name));
+    c.addEventListener("change", () => {
+      // Change the styling immediately
+      applyStyle(f, element, c.value);
+      // Set state
+      state.style[elementName][name] = c.value;
+    });
+  }
 }
 
 function getState(card) {
@@ -176,11 +178,20 @@ function setUpBingoCardControls(card) {
   stylables.forEach((stylableElementName) => {
     const newControls = controls.content.cloneNode(true);
     const newContainer = document.createElement("div");
+    const heading = document.createElement("h3");
+    heading.innerText = stylableElementName;
+    newContainer.appendChild(heading);
     newContainer.appendChild(newControls);
     card.appendChild(newContainer);
     styles.forEach(([name, f]) => {
-      newContainer.querySelector(".style-".concat(name))
-        .classList.add("style-".concat(stylableElementName).concat("-").concat(name));
+      const e = newContainer.querySelector(".style-".concat(name));
+      if (defaultCard.style[stylableElementName][name] != undefined) {
+        e.classList.add("style-".concat(stylableElementName).concat("-").concat(name));
+      } else {
+        // Remove elment
+        console.log("goo");
+        newContainer.removeChild(e);
+      }
     });
   });
 
