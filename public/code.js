@@ -8,10 +8,22 @@ console.log("amongus 🤨")
 
 const defaultItemText = "\n🦆 duck";
 const defaultCard = {
-  "size": 4,
-  "items": Array(16).fill({ text: defaultItemText }),
-  "style-width": "400px",
-  "style-height": "400px",
+  size: 4,
+  items: Array(16).fill({ text: defaultItemText }),
+  style: {
+    grid: {
+      size: "400px",
+      backgroundColor: "lightyellow",
+    },
+    item: {
+      size: "20px",
+      backgroundColor: "lightblue",
+    },
+    card: {
+      size: "800px",
+      backgroundColor: "lightgreen",
+    },
+  },
 }
 
 // All allowed CSS styles first with than without camelCasing
@@ -32,7 +44,8 @@ const styles = [
 // name: name of the type of controls, say 'size'
 function hookUpStyleControls(card, element, elementName, name, f) {
   const state = getState(card);
-  const c = card.querySelector(".".concat(elementName).concat(name));
+  console.log(".style-".concat(elementName).concat("-").concat(name));
+  const c = card.querySelector(".style-".concat(elementName).concat("-").concat(name));
   c.addEventListener("change", () => {
     // Change the styling immediately
     f(element, c.value);
@@ -87,8 +100,9 @@ emptyBingoTile.append(emptyBingoTileText);
 
 // Create a bingo card from state
 function renderCard (card, grid) {
-  removeAllChildren(grid);
   const state = getState(card);
+
+  removeAllChildren(grid);
 
   // Set the number of rows/columns
   grid.style.gridTemplateColumns = "repeat(".concat(state.size, ", minmax(0, 1fr))");
@@ -103,7 +117,7 @@ function renderCard (card, grid) {
     } else {
       newNode.querySelector(".bingo-text").innerText = defaultItemText;
     }
-    tileSetup(card, grid, newNode);
+    tileSetup(card, grid, newNode, state);
   }
 
   // Load styling
@@ -114,7 +128,7 @@ function renderCard (card, grid) {
 }
 
 // Set up event listeners for a tile
-function tileSetup(card, grid, element) {
+function tileSetup(card, grid, element, state) {
   // Crossing
   element.addEventListener("contextmenu", (event) => {
     event.preventDefault();
@@ -136,7 +150,7 @@ function tileSetup(card, grid, element) {
   // Styling
   styles.forEach(([name, f]) => {
     // Apply from current state
-    f(element, state.style.element[name]);
+    f(element, state.style.item[name]);
     // Register element for controls
     hookUpStyleControls(card, element, "item", name, f);
   });
@@ -181,12 +195,12 @@ function setUpBingoCardControls(card) {
   updateSaveBingoCardLink(card);
 
   // Styling
-  styles.forEach([name, f]) {
+  styles.forEach(([name, f]) => {
     // Set up controls for the name
     hookUpStyleControls(card, grid, "grid", name, f);
     hookUpStyleControls(card, card, "card", name, f);
     // Styling for items: in tileSetup
-  }
+  });
 }
 // Set up controls when app starts
 document.querySelectorAll(".card").forEach((element) => {
