@@ -3,9 +3,6 @@ console.log("amongus 🤨")
 // 'card' is the outermost element, most commonly used
 // 'grid' is the grid holding the items
 
-// TODO: make default card also describe which styles for the different stylable
-// elements should be exposed/saved
-
 // better style mechanism
 // 2 groups (card/item), array of (key: UI-item, register(element), load(element))
 
@@ -16,10 +13,10 @@ const defaultCard = {
   style: {
     grid: {
       size: "400",
-      backgroundColor: "lightyellow",
+      backgroundColor: "#B5E8E0",
     },
     item: {
-      backgroundColor: "lightpink",
+      backgroundColor: "#F5C2E7",
     },
     card: {
     },
@@ -49,15 +46,15 @@ function applyStyle(f, e, v) {
 // elementName: grid/item/card
 // name: name of the type of controls, say 'size'
 function hookUpStyleControls(card, element, elementName, name, f) {
-  const state = getState(card);
-  if (state.style[elementName][name] != undefined) {
-    const state = getState(card);
+  if (getState(card).style[elementName][name] != undefined) {
     const c = card.querySelector(".style-".concat(elementName).concat("-").concat(name));
     c.addEventListener("change", () => {
       // Change the styling immediately
       applyStyle(f, element, c.value);
       // Set state
+      const state = getState(card);
       state.style[elementName][name] = c.value;
+      setState(card, state);
     });
   }
 }
@@ -187,9 +184,9 @@ function setUpBingoCardControls(card) {
       const e = newContainer.querySelector(".style-".concat(name));
       if (defaultCard.style[stylableElementName][name] != undefined) {
         e.classList.add("style-".concat(stylableElementName).concat("-").concat(name));
+        e.value = defaultCard.style[stylableElementName][name];
       } else {
         // Remove elment
-        console.log("goo");
         newContainer.removeChild(e);
       }
     });
