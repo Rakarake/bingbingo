@@ -26,6 +26,8 @@ const defaultCard = {
   },
 }
 
+const stylables = [ "grid", "item", "card" ];
+
 // All allowed CSS styles first with than without camelCasing
 // v: controls, e: element
 const styles = [
@@ -44,7 +46,6 @@ const styles = [
 // name: name of the type of controls, say 'size'
 function hookUpStyleControls(card, element, elementName, name, f) {
   const state = getState(card);
-  console.log(".style-".concat(elementName).concat("-").concat(name));
   const c = card.querySelector(".style-".concat(elementName).concat("-").concat(name));
   c.addEventListener("change", () => {
     // Change the styling immediately
@@ -73,11 +74,9 @@ function setItemState(card, index, field, value) {
   const state = getState(card);
   // Fill in needed intries if new text is added
   if (index >= state.items.length) {
-    console.log("goo", index, state.items.length, index + 1 - state.items.length);
     state.items = state.items.concat(Array(index + 1 - state.items.length).fill({ text: defaultItemText }));
   }
   state.items[index][field] = value;
-  console.log(index, field, value);
   setState(card, state);
 }
 
@@ -166,6 +165,19 @@ function removeAllChildren(element) {
 // Set up all functionality for bingo card controls
 function setUpBingoCardControls(card) {
   const grid = card.querySelector(".grid");
+  
+  // Instantiate controls
+  const controls = card.querySelector(".style-template");
+  stylables.forEach((stylableElementName) => {
+    const newControls = controls.content.cloneNode(true);
+    const newContainer = document.createElement("div");
+    newContainer.appendChild(newControls);
+    card.appendChild(newContainer);
+    styles.forEach(([name, f]) => {
+      newContainer.querySelector(".style-".concat(name))
+        .classList.add("style-".concat(stylableElementName).concat("-").concat(name));
+    });
+  });
 
   // Create empty bingo card
   setState(card, defaultCard);
