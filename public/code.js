@@ -3,6 +3,9 @@ console.log("amongus 🤨")
 // 'card' is the outermost element, most commonly used
 // 'grid' is the grid holding the items
 
+// TODO: make default card also describe which styles for the different stylable
+// elements should be exposed/saved
+
 // better style mechanism
 // 2 groups (card/item), array of (key: UI-item, register(element), load(element))
 
@@ -12,15 +15,13 @@ const defaultCard = {
   items: Array(16).fill({ text: defaultItemText }),
   style: {
     grid: {
-      size: "400px",
+      size: "400",
       backgroundColor: "lightyellow",
     },
     item: {
-      size: "20px",
       backgroundColor: "lightblue",
     },
     card: {
-      size: "800px",
       backgroundColor: "lightgreen",
     },
   },
@@ -41,6 +42,10 @@ const styles = [
   }],
 ];
 
+function applyStyle(f, e, v) {
+  if (v != null) { f(e, v); }
+}
+
 // element: element to be styled
 // elementName: grid/item/card
 // name: name of the type of controls, say 'size'
@@ -49,7 +54,7 @@ function hookUpStyleControls(card, element, elementName, name, f) {
   const c = card.querySelector(".style-".concat(elementName).concat("-").concat(name));
   c.addEventListener("change", () => {
     // Change the styling immediately
-    f(element, c.value);
+    applyStyle(f, element, c.value);
     // Set state
     state.style[elementName][name] = c.value;
   });
@@ -121,8 +126,8 @@ function renderCard (card, grid) {
 
   // Load styling
   styles.forEach(([name, f]) => {
-    f(grid, state.style.grid[name]);
-    f(card, state.style.card[name]);
+    applyStyle(f, grid, state.style.grid[name]);
+    applyStyle(f, card, state.style.card[name]);
   });
 }
 
@@ -149,7 +154,7 @@ function tileSetup(card, grid, element, state) {
   // Styling
   styles.forEach(([name, f]) => {
     // Apply from current state
-    f(element, state.style.item[name]);
+    applyStyle(f, element, state.style.item[name]);
     // Register element for controls
     hookUpStyleControls(card, element, "item", name, f);
   });
@@ -165,7 +170,7 @@ function removeAllChildren(element) {
 // Set up all functionality for bingo card controls
 function setUpBingoCardControls(card) {
   const grid = card.querySelector(".grid");
-  
+
   // Instantiate controls
   const controls = card.querySelector(".style-template");
   stylables.forEach((stylableElementName) => {
