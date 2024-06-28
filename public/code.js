@@ -3,6 +3,9 @@ console.log("amongus 🤨")
 // 'card' is the outermost element, most commonly used
 // 'grid' is the grid holding the items
 
+// better style mechanism
+// 2 groups (card/item), array of (key: UI-item, register(element), load(element))
+
 const defaultItemText = "\n🦆 duck";
 const defaultCard = {
   "size": 4,
@@ -12,12 +15,31 @@ const defaultCard = {
 }
 
 // All allowed CSS styles first with than without camelCasing
+// v: controls, e: element
 const styles = [
-  "width",
-  "height",
-  "backgroundColor",
-  "cornerRadius",
+  ["size", (e, v) => {
+    const v2 =  v.concat("px");
+    e.style.width = v2;
+    e.style.height = v2;
+  }],
+  ["backgroundColor", (e, v) => {
+    e.style.backgroundColor = v;
+  }],
 ];
+
+// element: element to be styled
+// elementName: grid/item/card
+// name: name of the type of controls, say 'size'
+function hookUpStyleControls(card, element, elementName, name, f) {
+  const state = getState(card);
+  const c = card.querySelector(".".concat(elementName).concat(name));
+  c.addEventListener("change", () => {
+    // Change the styling immediately
+    f(element, c.value);
+    // Set state
+    state.style[elementName][name] = c.value;
+  });
+}
 
 function getState(card) {
   return JSON.parse(card.dataset.state);
@@ -85,17 +107,9 @@ function renderCard (card, grid) {
   }
 
   // Load styling
-  styles.forEach((s1) => {
-    const styleValue = state["style-".concat(s1)];
-    if (styleValue) {
-      grid.style[s1] = styleValue;
-    }
-    const styleItemValue = state["styleItem-".concat(s1)];
-    if (styleItemValue) {
-      for (child of grid.children) {
-        child.style[s1] = styleItemValue;
-      }
-    }
+  styles.forEach(([name, f]) => {
+    f(grid, state.style.grid[name]);
+    f(card, state.style.card[name]);
   });
 }
 
@@ -117,6 +131,14 @@ function tileSetup(card, grid, element) {
     const index = Array.from(grid.children).indexOf(element);
     setItemState(card, index, "text", e.currentTarget.innerText);
     updateSaveBingoCardLink(card);
+  });
+
+  // Styling
+  styles.forEach(([name, f]) => {
+    // Apply from current state
+    f(element, state.style.element[name]);
+    // Register element for controls
+    hookUpStyleControls(card, element, "item", name, f);
   });
 }
 
@@ -158,15 +180,13 @@ function setUpBingoCardControls(card) {
   // Save: update the link as well
   updateSaveBingoCardLink(card);
 
-  // STYLING
-  // Card size
-  styles.forEach((s1) => {
-    const element = card.querySelector(".style-".concat(s1));
-    element.addEventListener("change", () => {
-      setCardState(card, "style-".concat(s1), element.value);
-      grid.style[s1] = element.value;
-    });
-  });
+  // Styling
+  styles.forEach([name, f]) {
+    // Set up controls for the name
+    hookUpStyleControls(card, grid, "grid", name, f);
+    hookUpStyleControls(card, card, "card", name, f);
+    // Styling for items: in tileSetup
+  }
 }
 // Set up controls when app starts
 document.querySelectorAll(".card").forEach((element) => {
