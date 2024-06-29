@@ -232,6 +232,8 @@ function setUpBingoCardControls(card) {
       });
     }
   });
+  // clear previous selections
+  loadElement.value = "";
 
   // Save: update the link as well
   updateSaveBingoCardLink(card);
