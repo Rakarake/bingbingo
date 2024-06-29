@@ -187,7 +187,7 @@ function setUpBingoCardControls(card) {
         e.value = defaultCard.style[stylableElementName][name];
       } else {
         // Remove elment
-        newContainer.removeChild(e);
+        newContainer.removeChild(e.parentElement);
       }
     });
   });
