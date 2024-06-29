@@ -17,6 +17,7 @@ const defaultCard = {
     },
     item: {
       backgroundColor: "#F5C2E7",
+      fontSize: "18",
     },
     card: {
     },
@@ -36,10 +37,48 @@ const styles = [
   ["backgroundColor", (e, v) => {
     e.style.backgroundColor = v;
   }],
+  ["fontSize", (e, v) => {
+    e.style.fontSize = v + "px";
+  }],
 ];
 
 function applyStyle(f, e, v) {
   if (v != null) { f(e, v); }
+}
+
+//function getCanvasFont(e) {
+//  const fontWeight = getCssStyle(e, 'font-weight');
+//  const fontSize = getCssStyle(e, 'font-size');
+//  const fontFamily = getCssStyle(e, 'font-family');
+//  return `${fontWeight} ${fontSize} ${fontFamily}`;
+//}
+//function getCssStyle(element, prop) {
+//  return window.getComputedStyle(element, null).getPropertyValue(prop);
+//}
+//function getTextWidth(text, font) {
+//  // re-use canvas object for better performance
+//  const canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
+//  const context = canvas.getContext("2d");
+//  context.font = font;
+//  const metrics = context.measureText(text);
+//  return metrics.width;
+//}
+
+// Change the text size to fit in the container
+function fitText(state, e) {
+  let fontSize =  Number(e.style.fontSize.substring(0, e.style.fontSize.length - 2.0));
+  console.log("goo?", fontSize, state.style.item.fontSize, fontSize < state.style.item.fontSize);
+  while (fontSize < state.style.item.fontSize) {
+    if (e.getBoundingClientRect().width > state.style.grid.size / state.size) {
+      break;
+    }
+    fontSize += 1;
+    e.style.fontSize = fontSize + "px";
+  }
+  while (e.getBoundingClientRect().width > state.style.grid.size / state.size && fontSize > 1) {
+    fontSize -= 1;
+    e.style.fontSize = fontSize + "px";
+  }
 }
 
 // element: element to be styled
@@ -73,7 +112,6 @@ function setItemState(card, index, field, value) {
   if (index >= state.items.length) {
     state.items = state.items.concat(Array(index + 1 - state.items.length).fill({ text: defaultItemText }));
   }
-  console.log(state, index);
   state.items[index][field] = value;
   setState(card, state);
 }
@@ -129,6 +167,11 @@ function renderCard (card, grid) {
     applyStyle(f, grid, state.style.grid[name]);
     applyStyle(f, card, state.style.card[name]);
   });
+
+  // Fit text
+  card.querySelectorAll(".bingo-item").forEach((e) => {
+    fitText(state, e);
+  });
 }
 
 // Set up event listeners for a tile
@@ -148,6 +191,7 @@ function tileSetup(card, grid, element, state, index) {
     // Update the state
     setItemState(card, index, "text", e.currentTarget.innerText);
     updateSaveBingoCardLink(card);
+    fitText(state, element);
   });
 
   // Styling
