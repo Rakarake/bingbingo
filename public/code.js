@@ -66,17 +66,14 @@ function setState(card, state) {
   card.dataset.state = JSON.stringify(state);
 }
 
-function setCardState(card, field, value) {
-  const state = getState(card);
-  state[field] = value;
-  setState(card, state);
-}
+// Padds the list if new index is used
 function setItemState(card, index, field, value) {
   const state = getState(card);
   // Fill in needed intries if new text is added
   if (index >= state.items.length) {
     state.items = state.items.concat(Array(index + 1 - state.items.length).fill({ text: defaultItemText }));
   }
+  console.log(state, index);
   state.items[index][field] = value;
   setState(card, state);
 }
@@ -120,7 +117,7 @@ function renderCard (card, grid) {
       } else {
         newNode.querySelector(".bingo-text").innerText = defaultItemText;
       }
-      tileSetup(card, grid, newNode, state);
+      tileSetup(card, grid, newNode, state, index);
       newNode.style.width = ((1.0 / state.size) * 100).toFixed(3).concat("%");
       newNode.style.height = ((1.0 / state.size) * 100).toFixed(3).concat("%");
     }
@@ -135,7 +132,7 @@ function renderCard (card, grid) {
 }
 
 // Set up event listeners for a tile
-function tileSetup(card, grid, element, state) {
+function tileSetup(card, grid, element, state, index) {
   // Crossing
   element.addEventListener("contextmenu", (event) => {
     event.preventDefault();
@@ -149,7 +146,6 @@ function tileSetup(card, grid, element, state) {
   textElement = element.querySelector(".bingo-text");
   textElement.addEventListener("input", (e) => {
     // Update the state
-    const index = Array.from(grid.children).indexOf(element);
     setItemState(card, index, "text", e.currentTarget.innerText);
     updateSaveBingoCardLink(card);
   });
@@ -218,8 +214,9 @@ function setUpBingoCardControls(card) {
   // Size: remake bingo card when size is changed
   const sizeElement = card.querySelector(".size");
   sizeElement.addEventListener("change", () => {
-    const newSize = sizeElement.value;
-    setCardState(card, "size", newSize);
+    const state = getState(card);
+    state.size = sizeElement.value;
+    setState(card, state);
     renderCard(card, grid);
   });
 
