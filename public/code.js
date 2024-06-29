@@ -67,17 +67,20 @@ function applyStyle(f, e, v) {
 // Change the text size to fit in the container
 function fitText(state, e) {
   let fontSize =  Number(e.style.fontSize.substring(0, e.style.fontSize.length - 2.0));
-  console.log("goo?", fontSize, state.style.item.fontSize, fontSize < state.style.item.fontSize);
+  let rect = e.getBoundingClientRect();
   while (fontSize < state.style.item.fontSize) {
-    if (e.getBoundingClientRect().width > state.style.grid.size / state.size) {
+    if (Math.max(rect.width, rect.height) > state.style.grid.size / state.size) {
       break;
     }
     fontSize += 1;
     e.style.fontSize = fontSize + "px";
+    rect = e.getBoundingClientRect();
   }
-  while (e.getBoundingClientRect().width > state.style.grid.size / state.size && fontSize > 1) {
+  rect = e.getBoundingClientRect();
+  while (Math.max(rect.width, rect.height) > state.style.grid.size / state.size && fontSize > 1) {
     fontSize -= 1;
     e.style.fontSize = fontSize + "px";
+    rect = e.getBoundingClientRect();
   }
 }
 
