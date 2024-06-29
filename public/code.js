@@ -168,6 +168,9 @@ function removeAllChildren(element) {
 
 // When loading / starting, the controls should show the right values
 function setValuesOfControls(card, state) {
+  // Size of card
+  card.querySelector(".size").value = state.size;
+  // Styling
   stylables.forEach((stylableElementName) => {
     styles.forEach(([name, f]) => {
       const e = card.querySelector(".style-".concat(stylableElementName).concat("-").concat(name));
