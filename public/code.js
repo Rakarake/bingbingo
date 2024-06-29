@@ -66,9 +66,6 @@ function setState(card, state) {
   card.dataset.state = JSON.stringify(state);
 }
 
-function getCardState(card, field) { return getState(card)[field]; }
-function getItemState(card, index, field) { return getState(card)[index][field]; }
-
 function setCardState(card, field, value) {
   const state = getState(card);
   state[field] = value;
