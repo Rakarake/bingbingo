@@ -202,7 +202,6 @@ function setUpBingoCardControls(card) {
       }
     });
   });
-  // TODO: fix persistant choice of card
   setValuesOfControls(card, defaultCard);
 
   // Create empty bingo card

@@ -14,6 +14,25 @@
   background: lightcyan;
 }
 
+.gooba {
+  padding: 5px;
+  background: pink;
+  border-radius: 4px;
+  width: 400px;
+  height: 400px;
+}
+
+.gooba-item {
+  font-size: 100%;
+  background: lightcyan;
+  width: 33.33%;
+  height: 33.33%;
+}
+
+.gooba-text {
+  text-align: center;
+}
+
 .crossed {
   background: url("golden-banana.gif"), lightyellow;
   background-size: 100% 100%;
