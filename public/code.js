@@ -166,6 +166,18 @@ function removeAllChildren(element) {
   }
 }
 
+// When loading / starting, the controls should show the right values
+function setValuesOfControls(card, state) {
+  stylables.forEach((stylableElementName) => {
+    styles.forEach(([name, f]) => {
+      const e = card.querySelector(".style-".concat(stylableElementName).concat("-").concat(name));
+      if (e != undefined) {
+        e.value = state.style[stylableElementName][name];
+      }
+    });
+  });
+}
+
 // Set up all functionality for bingo card controls
 function setUpBingoCardControls(card) {
   const grid = card.querySelector(".grid");
@@ -184,13 +196,14 @@ function setUpBingoCardControls(card) {
       const e = newContainer.querySelector(".style-".concat(name));
       if (defaultCard.style[stylableElementName][name] != undefined) {
         e.classList.add("style-".concat(stylableElementName).concat("-").concat(name));
-        e.value = defaultCard.style[stylableElementName][name];
       } else {
         // Remove elment
         newContainer.removeChild(e.parentElement);
       }
     });
   });
+  // TODO: fix persistant choice of card
+  setValuesOfControls(card, defaultCard);
 
   // Create empty bingo card
   setState(card, defaultCard);
@@ -212,6 +225,7 @@ function setUpBingoCardControls(card) {
         const state = JSON.parse(v);
         setState(card, state);
         renderCard(card, grid);
+        setValuesOfControls(card, state);
       });
     }
   });
