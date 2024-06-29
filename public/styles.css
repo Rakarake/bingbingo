@@ -1,20 +1,4 @@
 .grid {
-  display: grid;
-  gap: 10px;
-  grid-auto-rows: auto;
-  padding: 5px;
-  background: pink;
-  border-radius: 4px;
-}
-
-.bingo-item {
-  text-align: center;
-  font-size: 100%;
-  aspect-ratio: 1 / 1;
-  background: lightcyan;
-}
-
-.gooba {
   padding: 5px;
   background: pink;
   border-radius: 4px;
@@ -22,14 +6,14 @@
   height: 400px;
 }
 
-.gooba-item {
+.bingo-item {
   font-size: 100%;
   background: lightcyan;
   width: 33.33%;
   height: 33.33%;
 }
 
-.gooba-text {
+.bingo-text {
   text-align: center;
 }
 

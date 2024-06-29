@@ -6,7 +6,7 @@ console.log("amongus 🤨")
 // better style mechanism
 // 2 groups (card/item), array of (key: UI-item, register(element), load(element))
 
-const defaultItemText = "\n\n🦆 duck";
+const defaultItemText = "🦆 duck";
 const defaultCard = {
   size: 4,
   items: Array(16).fill({ text: defaultItemText }),
@@ -91,7 +91,7 @@ function updateSaveBingoCardLink (card) {
 }
 
 // Bingo element to use when generating new bingo cards
-const emptyBingoTile = document.createElement("div");
+const emptyBingoTile = document.createElement("td");
 emptyBingoTile.classList.add("bingo-item");
 const emptyBingoTileText = document.createElement("div");
 emptyBingoTileText.classList.add("bingo-text");
@@ -108,16 +108,23 @@ function renderCard (card, grid) {
   grid.style.gridTemplateColumns = "repeat(".concat(state.size, ", minmax(0, 1fr))");
 
   // Add new elements
-  for (let i = 0; i < (state.size * state.size); i++) {
-    const newNode = emptyBingoTile.cloneNode(true);
-    grid.appendChild(newNode);
-    // Set contents if it is provided
-    if (i < state.items.length) {
-      newNode.querySelector(".bingo-text").innerText = state.items[i].text;
-    } else {
-      newNode.querySelector(".bingo-text").innerText = defaultItemText;
+  for (let i = 0; i < state.size; i++) {
+    const newRow = document.createElement("tr");
+    for (let j = 0; j < state.size; j++) {
+      const index = i * state.size + j
+      const newNode = emptyBingoTile.cloneNode(true);
+      newRow.appendChild(newNode);
+      // Set contents if it is provided
+      if (index < state.items.length) {
+        newNode.querySelector(".bingo-text").innerText = state.items[index].text;
+      } else {
+        newNode.querySelector(".bingo-text").innerText = defaultItemText;
+      }
+      tileSetup(card, grid, newNode, state);
+      newNode.style.width = ((1.0 / state.size) * 100).toFixed(3).concat("%");
+      newNode.style.height = ((1.0 / state.size) * 100).toFixed(3).concat("%");
     }
-    tileSetup(card, grid, newNode, state);
+    grid.appendChild(newRow);
   }
 
   // Load styling
