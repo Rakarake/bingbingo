@@ -6,13 +6,13 @@ console.log("amongus 🤨")
 // better style mechanism
 // 2 groups (card/item), array of (key: UI-item, register(element), load(element))
 
-const defaultItemText = "\n🦆 duck";
+const defaultItemText = "\n\n🦆 duck";
 const defaultCard = {
   size: 4,
   items: Array(16).fill({ text: defaultItemText }),
   style: {
     grid: {
-      size: "400",
+      size: "420",
       backgroundColor: "#B5E8E0",
     },
     item: {
