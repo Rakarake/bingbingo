@@ -18,12 +18,15 @@ const defaultCard = {
       padding: "10",
       borderStyle: "solid",
       borderWidth: "5",
+      borderColor: "#F5E0DC",
+      borderRadius: "5",
     },
     item: {
       backgroundColor: "#F5C2E7",
       fontSize: "18",
       borderStyle: "solid",
       borderColor: "#F5E0DC",
+      borderRadius: "5",
       padding: "3",
     },
     card: {
@@ -61,6 +64,9 @@ const styles = [
   }],
   ["borderWidth", (e, v) => {
     e.style.borderWidth = v + "px";
+  }],
+  ["borderRadius", (e, v) => {
+    e.style.borderRadius = v + "px";
   }],
 ];
 
