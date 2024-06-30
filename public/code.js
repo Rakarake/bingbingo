@@ -15,12 +15,16 @@ const defaultCard = {
       size: "420",
       backgroundColor: "#B5E8E0",
       borderSpacing: "10",
+      padding: "10",
+      borderStyle: "solid",
+      borderWidth: "5",
     },
     item: {
       backgroundColor: "#F5C2E7",
       fontSize: "18",
       borderStyle: "solid",
       borderColor: "#F5E0DC",
+      padding: "3",
     },
     card: {
     },
@@ -51,7 +55,13 @@ const styles = [
   }],
   ["borderColor", (e, v) => {
     e.style.borderColor = v;
-  }]
+  }],
+  ["padding", (e, v) => {
+    e.style.padding = v + "px";
+  }],
+  ["borderWidth", (e, v) => {
+    e.style.borderWidth = v + "px";
+  }],
 ];
 
 function applyStyle(f, e, v) {
@@ -66,7 +76,8 @@ function fitText(state, e) {
     const rect = e.getBoundingClientRect();
     return Math.max(rect.width, rect.height);
   };
-  const expected = (state.style.grid.size - (state.style.grid.borderSpacing * (state.size + 1))) / state.size;
+  console.log(state.style.grid.padding, state.style.grid.borderWidth);
+  const expected = (state.style.grid.size - (state.style.grid.borderSpacing * (state.size + 1) + state.style.grid.padding*2 + state.style.grid.borderWidth*2)) / state.size;
   while (fontSize < state.style.item.fontSize) {
     if (cOutlier() > expected) {
       break;
