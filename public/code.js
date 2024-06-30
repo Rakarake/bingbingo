@@ -14,6 +14,7 @@ const defaultCard = {
     grid: {
       size: "420",
       backgroundColor: "#B5E8E0",
+      borderSpacing: "10",
     },
     item: {
       backgroundColor: "#F5C2E7",
@@ -40,36 +41,26 @@ const styles = [
   ["fontSize", (e, v) => {
     e.style.fontSize = v + "px";
   }],
+  ["borderSpacing", (e, v) => {
+    e.style.borderSpacing = v + "px";
+  }]
 ];
 
 function applyStyle(f, e, v) {
   if (v != null) { f(e, v); }
 }
 
-//function getCanvasFont(e) {
-//  const fontWeight = getCssStyle(e, 'font-weight');
-//  const fontSize = getCssStyle(e, 'font-size');
-//  const fontFamily = getCssStyle(e, 'font-family');
-//  return `${fontWeight} ${fontSize} ${fontFamily}`;
-//}
-//function getCssStyle(element, prop) {
-//  return window.getComputedStyle(element, null).getPropertyValue(prop);
-//}
-//function getTextWidth(text, font) {
-//  // re-use canvas object for better performance
-//  const canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement("canvas"));
-//  const context = canvas.getContext("2d");
-//  context.font = font;
-//  const metrics = context.measureText(text);
-//  return metrics.width;
-//}
-
 // Change the text size to fit in the container
 function fitText(state, e) {
   let fontSize =  Number(e.style.fontSize.substring(0, e.style.fontSize.length - 2.0));
-  let rect = e.getBoundingClientRect();
+  // Compute the biggest dimension of the rect
+  const cOutlier = () => {
+    const rect = e.getBoundingClientRect();
+    return Math.max(rect.width, rect.height);
+  };
+  const expected = (state.style.grid.size - (state.style.grid.borderSpacing * (state.size + 1))) / state.size;
   while (fontSize < state.style.item.fontSize) {
-    if (Math.max(rect.width, rect.height) > state.style.grid.size / state.size) {
+    if (cOutlier() > expected) {
       break;
     }
     fontSize += 1;
@@ -77,7 +68,7 @@ function fitText(state, e) {
     rect = e.getBoundingClientRect();
   }
   rect = e.getBoundingClientRect();
-  while (Math.max(rect.width, rect.height) > state.style.grid.size / state.size && fontSize > 1) {
+  while (cOutlier() > expected && fontSize > 1) {
     fontSize -= 1;
     e.style.fontSize = fontSize + "px";
     rect = e.getBoundingClientRect();
