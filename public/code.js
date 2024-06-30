@@ -19,6 +19,8 @@ const defaultCard = {
     item: {
       backgroundColor: "#F5C2E7",
       fontSize: "18",
+      borderStyle: "solid",
+      borderColor: "#F5E0DC",
     },
     card: {
     },
@@ -43,6 +45,12 @@ const styles = [
   }],
   ["borderSpacing", (e, v) => {
     e.style.borderSpacing = v + "px";
+  }],
+  ["borderStyle", (e, v) => {
+    e.style.borderStyle = v;
+  }],
+  ["borderColor", (e, v) => {
+    e.style.borderColor = v;
   }]
 ];
 
