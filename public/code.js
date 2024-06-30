@@ -1,43 +1,63 @@
-console.log("amongus 🤨")
+/*
+Copyright (C) 2024  MDF
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+details.
+
+You should have received a copy of the GNU General Public License along with
+this program. If not, see <https://www.gnu.org/licenses/>. 
+*/
+
+console.log("amongus 🤨");
 
 // 'card' is the outermost element, most commonly used
 // 'grid' is the grid holding the items
-
-// better style mechanism
-// 2 groups (card/item), array of (key: UI-item, register(element), load(element))
+// 'item' is the tiles that make up the card
 
 const defaultItemText = "🦆 duck";
+
+// The default card indicates which controls should be present for
+// each stylable element
 const defaultCard = {
   size: 4,
   items: Array(16).fill({ text: defaultItemText }),
   style: {
     grid: {
       size: "420",
+      padding: "10",
       backgroundColor: "#B5E8E0",
       borderSpacing: "10",
-      padding: "10",
       borderStyle: "solid",
       borderWidth: "5",
       borderColor: "#F5E0DC",
       borderRadius: "5",
     },
     item: {
-      backgroundColor: "#F5C2E7",
+      padding: "3",
       fontSize: "18",
+      backgroundColor: "#F5C2E7",
       borderStyle: "solid",
       borderColor: "#F5E0DC",
       borderRadius: "5",
-      padding: "3",
     },
     card: {
     },
   },
-}
+};
 
+// The names of the stylable elements
 const stylables = [ "grid", "item", "card" ];
 
-// All allowed CSS styles first with than without camelCasing
-// v: controls, e: element
+// All allowed CSS styles in camel casing followed by a lambda applying
+// a value to the given stylable element
+// v: value, e: element
 const styles = [
   ["size", (e, v) => {
     const v2 =  v.concat("px");
@@ -70,6 +90,7 @@ const styles = [
   }],
 ];
 
+// Helper
 function applyStyle(f, e, v) {
   if (v != null) { f(e, v); }
 }
@@ -82,7 +103,6 @@ function fitText(state, e) {
     const rect = e.getBoundingClientRect();
     return Math.max(rect.width, rect.height);
   };
-  console.log(state.style.grid.padding, state.style.grid.borderWidth);
   const expected = (state.style.grid.size - (state.style.grid.borderSpacing * (state.size + 1) + state.style.grid.padding*2 + state.style.grid.borderWidth*2)) / state.size;
   while (fontSize < state.style.item.fontSize) {
     if (cOutlier() > expected) {
@@ -157,9 +177,6 @@ function renderCard (card, grid) {
   const state = getState(card);
 
   removeAllChildren(grid);
-
-  // Set the number of rows/columns
-  grid.style.gridTemplateColumns = "repeat(".concat(state.size, ", minmax(0, 1fr))");
 
   // Add new elements
   for (let i = 0; i < state.size; i++) {
