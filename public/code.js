@@ -3,7 +3,7 @@
 JavaScript code in this page.
 
 
-Copyright (C) 2024  MDF
+Copyright (C) 2024  Monke Defens Fors (MDF)
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU Affero General Public License as published by the Free Software
@@ -35,7 +35,7 @@ const defaultItemText = "1";
 // each stylable element
 const defaultCard = {
   size: "4",
-  items: Array(16).fill({ text: defaultItemText }),
+  items: [],
   tolerance: "0.8",
   style: {
     grid: {
@@ -129,7 +129,6 @@ function fitText(state, e) {
     (gridSize - (borderSpacing * (size + 1) + gridPadding*2 + gridBorderWidth*2))
     / size + tolerance;
 
-  console.log(expected, state.size);
   let fontSize =  Number(e.style.fontSize.substring(0, e.style.fontSize.length - 2.0));
 
   // Compute the biggest dimension of the rect
@@ -173,7 +172,7 @@ function getState(card) {
   return JSON.parse(card.dataset.state);
 }
 function setState(card, state) {
-  card.dataset.state = JSON.stringify(state);
+  card.dataset.state = JSON.stringify(state, null, 4);
 }
 
 // Padds the list if new index is used
@@ -181,7 +180,11 @@ function setItemState(card, index, field, value) {
   const state = getState(card);
   // Fill in needed intries if new text is added
   if (index >= state.items.length) {
-    state.items = state.items.concat(Array(index + 1 - state.items.length).fill({ text: defaultItemText }));
+    let additionalItems = Array(index + 1 - state.items.length);
+    for (let i = 0; i < additionalItems.length; i++) {
+      additionalItems[i] = { text: defaultItemText };
+    }
+    state.items = state.items.concat(additionalItems);
   }
   state.items[index][field] = value;
   setState(card, state);
@@ -190,7 +193,7 @@ function setItemState(card, index, field, value) {
 // Update the link that saves your bingo card
 function updateSaveBingoCardLink (card) {
   const saveElement = card.querySelector(".save");
-  const jsonString = JSON.stringify(getState(card));
+  const jsonString = JSON.stringify(getState(card), null, 4);
   const blob = new Blob([jsonString], { type: 'application/json' });
   saveElement.href = URL.createObjectURL(blob);
   saveElement.download = 'bingo-card.json';  // Filename of download
@@ -210,12 +213,7 @@ function renderCard (card, grid, state) {
   const addChild = (parent, index) => {
     const newNode = emptyBingoTile.cloneNode(true);
     parent.appendChild(newNode);
-    // Set contents if it is provided
-    if (index < state.items.length) {
-      newNode.querySelector(".bingo-text").innerText = state.items[index].text;
-    } else {
-      newNode.querySelector(".bingo-text").innerText = defaultItemText;
-    }
+    newNode.querySelector(".bingo-text").innerText = defaultItemText;
     tileSetup(card, grid, newNode, state, index);
   }
   const currentSize = grid.children.length;
@@ -254,16 +252,26 @@ function renderCard (card, grid, state) {
     }
   }
 
-  // Load styling
-  styles.forEach(([name, f]) => {
-    applyStyle(f, grid, state.style.grid[name]);
-    applyStyle(f, card, state.style.card[name]);
-  });
+  // Load text
+  const allBingoText = card.querySelectorAll(".bingo-text");
+  for (let i = 0; i < allBingoText.length; i++) {
+    if (state.items[i] != undefined) {
+      allBingoText[i].innerText = state.items[i].text;
+    } else {
+      allBingoText[i].innerText = defaultItemText;
+    }
+  }
 
   // Set width and height to share the available space
   card.querySelectorAll(".bingo-item").forEach((e) => {
     e.style.width = ((1.0 / state.size) * 100).toFixed(3).concat("%");
     e.style.height = ((1.0 / state.size) * 100).toFixed(3).concat("%");
+  });
+
+  // Load styling
+  styles.forEach(([name, f]) => {
+    applyStyle(f, grid, state.style.grid[name]);
+    applyStyle(f, card, state.style.card[name]);
   });
 
   // Fit text
