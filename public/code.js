@@ -36,7 +36,7 @@ const defaultItemText = "1";
 const defaultCard = {
   size: "4",
   items: Array(16).fill({ text: defaultItemText }),
-  tolerance: "0.2",
+  tolerance: "0.8",
   style: {
     grid: {
       size: "420",
@@ -129,12 +129,15 @@ function fitText(state, e) {
     (gridSize - (borderSpacing * (size + 1) + gridPadding*2 + gridBorderWidth*2))
     / size + tolerance;
 
+  console.log(expected, state.size);
   let fontSize =  Number(e.style.fontSize.substring(0, e.style.fontSize.length - 2.0));
+
   // Compute the biggest dimension of the rect
   const cOutlier = () => {
     const rect = e.getBoundingClientRect();
     return Math.max(rect.width, rect.height) - tolerance;
   };
+  // Maximize as much as until rect grows
   while (fontSize < state.style.item.fontSize) {
     if (cOutlier() > expected) {
       break;
@@ -142,6 +145,7 @@ function fitText(state, e) {
     fontSize += 1;
     e.style.fontSize = fontSize + "px";
   }
+  // Minimize until rect is the right size
   while (cOutlier() > expected && fontSize > 1) {
     fontSize -= 1;
     e.style.fontSize = fontSize + "px";
@@ -202,33 +206,64 @@ emptyBingoTile.append(emptyBingoTileText);
 
 // Create a bingo card from state
 function renderCard (card, grid, state) {
-  console.log("rendering card");
-  removeAllChildren(grid);
-
-  // Add new elements
-  for (let i = 0; i < state.size; i++) {
-    const newRow = document.createElement("tr");
-    for (let j = 0; j < state.size; j++) {
-      const index = i * state.size + j
-      const newNode = emptyBingoTile.cloneNode(true);
-      newRow.appendChild(newNode);
-      // Set contents if it is provided
-      if (index < state.items.length) {
-        newNode.querySelector(".bingo-text").innerText = state.items[index].text;
-      } else {
-        newNode.querySelector(".bingo-text").innerText = defaultItemText;
-      }
-      tileSetup(card, grid, newNode, state, index);
-      newNode.style.width = ((1.0 / state.size) * 100).toFixed(3).concat("%");
-      newNode.style.height = ((1.0 / state.size) * 100).toFixed(3).concat("%");
+  // Add new / remove unwanted elements
+  const addChild = (parent, index) => {
+    const newNode = emptyBingoTile.cloneNode(true);
+    parent.appendChild(newNode);
+    // Set contents if it is provided
+    if (index < state.items.length) {
+      newNode.querySelector(".bingo-text").innerText = state.items[index].text;
+    } else {
+      newNode.querySelector(".bingo-text").innerText = defaultItemText;
     }
-    grid.appendChild(newRow);
+    tileSetup(card, grid, newNode, state, index);
+  }
+  const currentSize = grid.children.length;
+  const newSize = state.size;
+  let diff = newSize - currentSize;
+  if (diff > 0) {
+    // positive: add elements
+    // test approach
+    const rows = Array.from(grid.children);
+    // Add to existing rows
+    for (let i = 0; i < currentSize; i++) {
+      for (let j = 0; j < diff; j++) {
+        addChild(grid.children[i], i*newSize + currentSize + j);
+      }
+    }
+    // Add new rows
+    for (let i = 0; i < diff; i ++) {
+      const newRow = document.createElement("tr");
+      grid.appendChild(newRow);
+      for (let j = 0; j < newSize; j++) {
+        addChild(newRow, (currentSize+i)*newSize + j)
+      }
+    }
+  } else {
+    diff = diff * -1;
+    // negative: remove elements
+    // Remove rows
+    for (let i = 0; i < diff; i++) {
+      grid.removeChild(grid.lastChild);
+    }
+    // Remove elements at the end of the rows
+    for (let i = 0; i < newSize; i++) {
+      for (let j = 0; j < diff; j++) {
+        grid.children[i].removeChild(grid.children[i].lastChild);
+      }
+    }
   }
 
   // Load styling
   styles.forEach(([name, f]) => {
     applyStyle(f, grid, state.style.grid[name]);
     applyStyle(f, card, state.style.card[name]);
+  });
+
+  // Set width and height to share the available space
+  card.querySelectorAll(".bingo-item").forEach((e) => {
+    e.style.width = ((1.0 / state.size) * 100).toFixed(3).concat("%");
+    e.style.height = ((1.0 / state.size) * 100).toFixed(3).concat("%");
   });
 
   // Fit text
@@ -254,7 +289,7 @@ function tileSetup(card, grid, element, state, index) {
     // Update the state
     setItemState(card, index, "text", e.currentTarget.innerText);
     updateSaveBingoCardLink(card);
-    fitText(state, element);
+    fitText(getState(card), element);
   });
 
   // Styling
