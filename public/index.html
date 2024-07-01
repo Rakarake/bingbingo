@@ -12,13 +12,13 @@
       <p>Press TAB to go to the next item, SHIFT-TAB to go to the previous</p>
       <div class="card">
         <table class="grid"></table>
-        Load board:
-        <input class="load" type="file">
+        <label>Load board:
+        <input class="load" type="file"></label>
         <br>
-        Save board:
-        <a class="save">Download</a>
+        <label>Save board:
+        <a class="save">Download</a></label>
         <br>
-        Number of items wide:
+        <label>Number of items wide:
         <select class="size">
           <option value="3">3x3</option>
           <option value="4">4x4</option>
@@ -26,9 +26,10 @@
           <option value="6">6x6</option>
           <option value="7">7x7</option>
           <option value="8">8x8</option>
-        </select>
+        </select></label>
         <br>
         <h2>Styling</h2>
+        <label>Tolerance <input type="number" class="tolerance"></label>
         <template class="style-template">
           <label>Size <input type="number" class="style-size"><br></label>
           <label>Padding <input type="number" class="style-padding"><br></label>

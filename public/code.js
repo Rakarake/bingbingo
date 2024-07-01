@@ -1,18 +1,26 @@
 /*
+@licstart  The following is the entire license notice for the
+JavaScript code in this page.
+
+
 Copyright (C) 2024  MDF
 
 This program is free software: you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
+the terms of the GNU Affero General Public License as published by the Free Software
 Foundation, either version 3 of the License, or (at your option) any later
 version.
 
 This program is distributed in the hope that it will be useful, but WITHOUT
 ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
 details.
 
-You should have received a copy of the GNU General Public License along with
-this program. If not, see <https://www.gnu.org/licenses/>. 
+You should have received a copy of the GNU Affero General Public License along with
+this program. If not, see <https://www.gnu.org/licenses/>.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this page.
 */
 
 console.log("amongus 🤨");
@@ -21,13 +29,14 @@ console.log("amongus 🤨");
 // 'grid' is the grid holding the items
 // 'item' is the tiles that make up the card
 
-const defaultItemText = "🦆 duck";
+const defaultItemText = "1";
 
 // The default card indicates which controls should be present for
 // each stylable element
 const defaultCard = {
-  size: 4,
+  size: "4",
   items: Array(16).fill({ text: defaultItemText }),
+  tolerance: "0.2",
   style: {
     grid: {
       size: "420",
@@ -90,6 +99,19 @@ const styles = [
   }],
 ];
 
+const controls = [
+  ["size", (c, card, grid, state) => {
+    state.size = c.value;
+    renderCard(card, grid, state);
+    return state;
+  }],
+  ["tolerance", (c, card, grid, state) => {
+    state.tolerance = c.value;
+    renderCard(card, grid, state);
+    return state;
+  }],
+];
+
 // Helper
 function applyStyle(f, e, v) {
   if (v != null) { f(e, v); }
@@ -97,26 +119,32 @@ function applyStyle(f, e, v) {
 
 // Change the text size to fit in the container
 function fitText(state, e) {
+  const tolerance = parseFloat(state.tolerance);
+  const size = parseInt(state.size);
+  const gridSize = parseInt(state.style.grid.size);
+  const borderSpacing = parseInt(state.style.grid.borderSpacing);
+  const gridPadding = parseInt(state.style.grid.padding);
+  const gridBorderWidth = parseInt(state.style.grid.borderWidth);
+  const expected =
+    (gridSize - (borderSpacing * (size + 1) + gridPadding*2 + gridBorderWidth*2))
+    / size + tolerance;
+
   let fontSize =  Number(e.style.fontSize.substring(0, e.style.fontSize.length - 2.0));
   // Compute the biggest dimension of the rect
   const cOutlier = () => {
     const rect = e.getBoundingClientRect();
-    return Math.max(rect.width, rect.height);
+    return Math.max(rect.width, rect.height) - tolerance;
   };
-  const expected = (state.style.grid.size - (state.style.grid.borderSpacing * (state.size + 1) + state.style.grid.padding*2 + state.style.grid.borderWidth*2)) / state.size;
   while (fontSize < state.style.item.fontSize) {
     if (cOutlier() > expected) {
       break;
     }
     fontSize += 1;
     e.style.fontSize = fontSize + "px";
-    rect = e.getBoundingClientRect();
   }
-  rect = e.getBoundingClientRect();
   while (cOutlier() > expected && fontSize > 1) {
     fontSize -= 1;
     e.style.fontSize = fontSize + "px";
-    rect = e.getBoundingClientRect();
   }
 }
 
@@ -173,9 +201,8 @@ emptyBingoTileText.setAttribute("contenteditable", "true");
 emptyBingoTile.append(emptyBingoTileText);
 
 // Create a bingo card from state
-function renderCard (card, grid) {
-  const state = getState(card);
-
+function renderCard (card, grid, state) {
+  console.log("rendering card");
   removeAllChildren(grid);
 
   // Add new elements
@@ -248,8 +275,11 @@ function removeAllChildren(element) {
 
 // When loading / starting, the controls should show the right values
 function setValuesOfControls(card, state) {
-  // Size of card
-  card.querySelector(".size").value = state.size;
+  // Generic controls
+  controls.forEach(([name, f]) => {
+    const e = card.querySelector("." + name);
+    e.value = state[name];
+  });
   // Styling
   stylables.forEach((stylableElementName) => {
     styles.forEach(([name, f]) => {
@@ -266,9 +296,9 @@ function setUpBingoCardControls(card) {
   const grid = card.querySelector(".grid");
 
   // Instantiate controls
-  const controls = card.querySelector(".style-template");
+  const styleTemplate = card.querySelector(".style-template");
   stylables.forEach((stylableElementName) => {
-    const newControls = controls.content.cloneNode(true);
+    const newControls = styleTemplate.content.cloneNode(true);
     const newContainer = document.createElement("div");
     const heading = document.createElement("h3");
     heading.innerText = stylableElementName;
@@ -289,16 +319,7 @@ function setUpBingoCardControls(card) {
 
   // Create empty bingo card
   setState(card, defaultCard);
-  renderCard(card, grid);
-
-  // Size: remake bingo card when size is changed
-  const sizeElement = card.querySelector(".size");
-  sizeElement.addEventListener("change", () => {
-    const state = getState(card);
-    state.size = sizeElement.value;
-    setState(card, state);
-    renderCard(card, grid);
-  });
+  renderCard(card, grid, defaultCard);
 
   // Load: remake bingo card according to specified file
   const loadElement = card.querySelector(".load");
@@ -307,7 +328,7 @@ function setUpBingoCardControls(card) {
       loadElement.files[0].text().then((v) => {
         const state = JSON.parse(v);
         setState(card, state);
-        renderCard(card, grid);
+        renderCard(card, grid, state);
         setValuesOfControls(card, state);
       });
     }
@@ -317,6 +338,14 @@ function setUpBingoCardControls(card) {
 
   // Save: update the link as well
   updateSaveBingoCardLink(card);
+
+  // Hook up controls
+  controls.forEach(([name, f]) => {
+    const e = card.querySelector("." + name);
+    e.addEventListener("change", () => {
+      setState(card, f(e, card, grid, getState(card)));
+    });
+  });
 
   // Styling
   styles.forEach(([name, f]) => {
