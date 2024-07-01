@@ -33,33 +33,33 @@ const defaultItemText = "1";
 
 // The default card indicates which controls should be present for
 // each stylable element
-const defaultCard = {
-  size: "4",
-  items: [],
-  tolerance: "0.8",
-  style: {
-    grid: {
-      size: "420",
-      padding: "10",
-      backgroundColor: "#B5E8E0",
-      borderSpacing: "10",
-      borderStyle: "solid",
-      borderWidth: "5",
-      borderColor: "#F5E0DC",
-      borderRadius: "5",
-    },
-    item: {
-      padding: "3",
-      fontSize: "18",
-      backgroundColor: "#F5C2E7",
-      borderStyle: "solid",
-      borderColor: "#F5E0DC",
-      borderRadius: "5",
-    },
-    card: {
-    },
-  },
-};
+const defaultCard =
+{
+    "size": "4",
+    "items": [],
+    "tolerance": "0.8",
+    "style": {
+        "grid": {
+            "size": "420",
+            "padding": "10",
+            "backgroundColor": "#fff6e0",
+            "borderSpacing": "10",
+            "borderStyle": "dashed",
+            "borderWidth": "5",
+            "borderColor": "#facc78",
+            "borderRadius": "5"
+        },
+        "item": {
+            "padding": "3",
+            "fontSize": "18",
+            "backgroundColor": "#f9f06b",
+            "borderStyle": "solid",
+            "borderColor": "#b5835a",
+            "borderRadius": "5"
+        },
+        "card": {}
+    }
+}
 
 // The names of the stylable elements
 const stylables = [ "grid", "item", "card" ];
@@ -164,6 +164,8 @@ function hookUpStyleControls(card, element, elementName, name, f) {
       const state = getState(card);
       state.style[elementName][name] = c.value;
       setState(card, state);
+      // Update link
+      updateSaveBingoCardLink(card, state);
     });
   }
 }
@@ -191,9 +193,9 @@ function setItemState(card, index, field, value) {
 }
 
 // Update the link that saves your bingo card
-function updateSaveBingoCardLink (card) {
+function updateSaveBingoCardLink (card, state) {
   const saveElement = card.querySelector(".save");
-  const jsonString = JSON.stringify(getState(card), null, 4);
+  const jsonString = JSON.stringify(state, null, 4);
   const blob = new Blob([jsonString], { type: 'application/json' });
   saveElement.href = URL.createObjectURL(blob);
   saveElement.download = 'bingo-card.json';  // Filename of download
@@ -296,7 +298,7 @@ function tileSetup(card, grid, element, state, index) {
   textElement.addEventListener("input", (e) => {
     // Update the state
     setItemState(card, index, "text", e.currentTarget.innerText);
-    updateSaveBingoCardLink(card);
+    updateSaveBingoCardLink(card, state);
     fitText(getState(card), element);
   });
 
@@ -380,13 +382,17 @@ function setUpBingoCardControls(card) {
   loadElement.value = "";
 
   // Save: update the link as well
-  updateSaveBingoCardLink(card);
+  updateSaveBingoCardLink(card, defaultCard);
 
   // Hook up controls
   controls.forEach(([name, f]) => {
     const e = card.querySelector("." + name);
     e.addEventListener("change", () => {
-      setState(card, f(e, card, grid, getState(card)));
+      // Set state
+      const newState = f(e, card, grid, getState(card));
+      setState(card, newState);
+      // Update link
+      updateSaveBingoCardLink(card, state);
     });
   });
 
