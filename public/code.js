@@ -63,7 +63,11 @@ const defaultCard =
 }
 
 // The names of the stylable elements
-const stylables = [ "grid", "item", "card" ];
+const stylables = [
+  ["grid", c => c.querySelectorAll("grid")] ,
+  ["item", c => c.querySelectorAll("bingo-item")],
+  ["card", c => [c]]
+];
 
 // All allowed CSS styles in camel casing followed by a lambda applying
 // a value to the given stylable element
@@ -74,34 +78,44 @@ const styles = [
     e.style.width = v2;
     e.style.height = v2;
   }],
-  ["backgroundColor", (e, v) => {
-    e.style.backgroundColor = v;
-  }],
-  ["backgroundImage", (e, v) => {
-    e.style.backgroundImage = v;
-  }],
-  ["fontSize", (e, v) => {
-    e.style.fontSize = v + "px";
-  }],
-  ["borderSpacing", (e, v) => {
-    e.style.borderSpacing = v + "px";
-  }],
-  ["borderStyle", (e, v) => {
-    e.style.borderStyle = v;
-  }],
-  ["borderColor", (e, v) => {
-    e.style.borderColor = v;
-  }],
-  ["padding", (e, v) => {
-    e.style.padding = v + "px";
-  }],
-  ["borderWidth", (e, v) => {
-    e.style.borderWidth = v + "px";
-  }],
-  ["borderRadius", (e, v) => {
-    e.style.borderRadius = v + "px";
-  }],
+  ["backgroundColor", styleNormal],
+  ["backgroundImage", styleNormal],
+  ["fontSize",        stylePixel],
+  ["borderSpacing",   stylePixel],
+  ["borderStyle",     styleNormal],
+  ["borderColor",     styleNormal],
+  ["padding",         stylePixel],
+  ["borderWidth",     stylePixel],
+  ["borderRadius",    stylePixel],
 ];
+
+// Example of a control-handler
+// Name: name of the class
+// returns: new state
+function styleNormalReady(card, name, state, v) {
+  styleNormal(card, name, state, v, () => {
+    
+  });
+}
+function styleNormal(card, name, state, v, f) {
+  // Which element to style?
+  stylables.forEach(([sName, sF]) => {
+    if (name.contains(sName)) {
+      const es = sF(card);
+      const styleClass = name.substring(sName.length - name.length, name.length);
+      es.forEach((e) => {
+        e.style[styleClass] = v;
+      });
+      state.style[sName][styleClass] = v;
+      return state;
+    }
+  });
+  throw new Error('Styling failed!');
+}
+
+function stylePixel(card, name, state, v) {
+  return styleNormal(card, name, state, v + "px");
+}
 
 const controls = [
   ["size", (c, card, grid, state) => {
