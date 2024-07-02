@@ -43,11 +43,12 @@ const defaultCard =
             "size": "420",
             "padding": "10",
             "backgroundColor": "#fff6e0",
+            "backgroundImage": "url('golden-banana.gif')",
             "borderSpacing": "10",
             "borderStyle": "dashed",
             "borderWidth": "5",
             "borderColor": "#facc78",
-            "borderRadius": "5"
+            "borderRadius": "5",
         },
         "item": {
             "padding": "3",
@@ -75,6 +76,9 @@ const styles = [
   }],
   ["backgroundColor", (e, v) => {
     e.style.backgroundColor = v;
+  }],
+  ["backgroundImage", (e, v) => {
+    e.style.backgroundImage = v;
   }],
   ["fontSize", (e, v) => {
     e.style.fontSize = v + "px";
@@ -330,7 +334,11 @@ function setValuesOfControls(card, state) {
     styles.forEach(([name, f]) => {
       const e = card.querySelector(".style-".concat(stylableElementName).concat("-").concat(name));
       if (e != undefined) {
-        e.value = state.style[stylableElementName][name];
+        if (e.getAttribute("type") != "file") {
+          e.value = state.style[stylableElementName][name];
+        } else {
+          e.value = "";
+        }
       }
     });
   });
