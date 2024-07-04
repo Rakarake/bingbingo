@@ -40,7 +40,7 @@ const defaultCard =
     "tolerance": "0.8",
     "style": {
         "grid": {
-            "size": "420",
+            "pixelSize": "420",
             "padding": "10",
             "backgroundColor": "#fff6e0",
             "backgroundImage": "url('golden-banana.gif')",
@@ -64,82 +64,104 @@ const defaultCard =
 
 // The names of the stylable elements
 const stylables = [
-  ["grid", c => c.querySelectorAll("grid")] ,
-  ["item", c => c.querySelectorAll("bingo-item")],
+  ["grid", c => c.querySelectorAll(".grid")] ,
+  ["item", c => c.querySelectorAll(".bingo-item")],
   ["card", c => [c]]
 ];
 
-// All allowed CSS styles in camel casing followed by a lambda applying
+
+// IDEA: state -> DOM, state -> control, control -> state
+
+// All allowed CSS styles in camel casing followed by a function applying
+// and a function taking state applying it to the controls
 // a value to the given stylable element
 // v: value, e: element
-const styles = [
-  ["size", (e, v) => {
-    const v2 =  v.concat("px");
-    e.style.width = v2;
-    e.style.height = v2;
-  }],
-  ["backgroundColor", styleNormal],
-  ["backgroundImage", styleNormal],
-  ["fontSize",        stylePixel],
-  ["borderSpacing",   stylePixel],
-  ["borderStyle",     styleNormal],
-  ["borderColor",     styleNormal],
-  ["padding",         stylePixel],
-  ["borderWidth",     stylePixel],
-  ["borderRadius",    stylePixel],
-];
-
-// Example of a control-handler
-// Name: name of the class
-// returns: new state
-function styleNormalReady(card, name, state, v) {
-  styleNormal(card, name, state, v, () => {
-    
-  });
-}
-function styleNormal(card, name, state, v, f) {
-  // Which element to style?
-  stylables.forEach(([sName, sF]) => {
-    if (name.contains(sName)) {
-      const es = sF(card);
-      const styleClass = name.substring(sName.length - name.length, name.length);
-      es.forEach((e) => {
-        e.style[styleClass] = v;
-      });
-      state.style[sName][styleClass] = v;
-      return state;
-    }
-  });
-  throw new Error('Styling failed!');
-}
-
-function stylePixel(card, name, state, v) {
-  return styleNormal(card, name, state, v + "px");
-}
-
 const controls = [
-  ["size", (c, card, grid, state) => {
-    state.size = c.value;
-    renderCard(card, grid, state);
-    return state;
-  }],
-  ["tolerance", (c, card, grid, state) => {
-    state.tolerance = c.value;
-    renderCard(card, grid, state);
-    return state;
-  }],
+  // Styles
+  ["pixelSize", (card, name, c, state) => {
+    forEachStylable(card, c, (sName, s) => {
+      const toApply = state.style[sName][name];
+      c.value = toApply;
+      s.style.width = toApply + "px";
+      s.style.height = toApply + "px";
+    });
+  }, cToStateStyle],
+  ["backgroundColor", cFromStateStyle,      cToStateStyle],
+  ["backgroundImage", cFromStateStyleImage, cToStateStyleImage],
+  ["fontSize",        cFromStateStylePixel, cToStateStyle],
+  ["borderSpacing",   cFromStateStylePixel, cToStateStyle],
+  ["borderStyle",     cFromStateStyle,      cToStateStyle],
+  ["borderColor",     cFromStateStyle,      cToStateStyle],
+  ["padding",         cFromStateStylePixel, cToStateStyle],
+  ["borderWidth",     cFromStateStylePixel, cToStateStyle],
+  ["borderRadius",    cFromStateStylePixel, cToStateStyle],
+
+  // Controls
+  ["size",      cFromState, cToState],
+  ["tolerance", cFromState, cToState],
 ];
 
 // Helper
-function applyStyle(f, e, v) {
-  if (v != null) { f(e, v); }
+function forEachStylable(card, c, f) {
+  stylables.forEach(([stylableName, sF]) => {
+    if (c.classList.contains("style-" + stylableName)) {
+      const es = sF(card);
+      es.forEach(e => {
+        f(stylableName, e);
+      });
+    }
+  });
+}
+
+function cFromState(card, name, c, state) {
+  c.value = state[name];
+}
+
+function cToState(card, name, c, state) {
+  state[name] = c.value;
+  renderCard(card, card.querySelector(".grid"), state);
+  return state;
+}
+
+function cFromStateStyle(card, name, c, state) {
+  forEachStylable(card, c, (sName, s) => {
+    const toApply = state.style[sName][name];
+    c.value = toApply;
+    s.style[name] = toApply;
+  });
+}
+
+function cToStateStyle(card, name, c, state) {
+  forEachStylable(card, c, (sName, s) => {
+    state.style[sName][name] = c.value;
+  });
+  return state;
+}
+
+function cFromStateStylePixel(card, name, c, state) {
+  forEachStylable(card, c, (sName, s) => {
+    const toApply = state.style[sName][name];
+    c.value = toApply;
+    s.style[name] = toApply + "px";
+  });
+}
+
+function cFromStateStyleImage(card, name, c, state) {
+  forEachStylable(card, c, (sName, s) => {
+    const toApply = state.style[sName][name];
+    //c.value = toApply;
+    s.style[name] = "";
+  });
+}
+
+function cToStateStyleImage(card, name, c, state) {
 }
 
 // Change the text size to fit in the container
 function fitText(state, e) {
   const tolerance = parseFloat(state.tolerance);
   const size = parseInt(state.size);
-  const gridSize = parseInt(state.style.grid.size);
+  const gridSize = parseInt(state.style.grid.pixelSize);
   const borderSpacing = parseInt(state.style.grid.borderSpacing);
   const gridPadding = parseInt(state.style.grid.padding);
   const gridBorderWidth = parseInt(state.style.grid.borderWidth);
@@ -166,25 +188,6 @@ function fitText(state, e) {
   while (cOutlier() > expected && fontSize > 1) {
     fontSize -= 1;
     e.style.fontSize = fontSize + "px";
-  }
-}
-
-// element: element to be styled
-// elementName: grid/item/card
-// name: name of the type of controls, say 'size'
-function hookUpStyleControls(card, element, elementName, name, f) {
-  if (getState(card).style[elementName][name] != undefined) {
-    const c = card.querySelector(".style-".concat(elementName).concat("-").concat(name));
-    c.addEventListener("change", () => {
-      // Change the styling immediately
-      applyStyle(f, element, c.value);
-      // Set state
-      const state = getState(card);
-      state.style[elementName][name] = c.value;
-      setState(card, state);
-      // Update link
-      updateSaveBingoCardLink(card, state);
-    });
   }
 }
 
@@ -288,15 +291,17 @@ function renderCard (card, grid, state) {
     e.style.height = ((1.0 / state.size) * 100).toFixed(3).concat("%");
   });
 
-  // Load styling
-  styles.forEach(([name, f]) => {
-    applyStyle(f, grid, state.style.grid[name]);
-    applyStyle(f, card, state.style.card[name]);
-  });
-
   // Fit text
   card.querySelectorAll(".bingo-item").forEach((e) => {
     fitText(state, e);
+  });
+
+  // Make controls show the right state
+  controls.forEach(([name, fromState, toState]) => {
+    const cs = card.querySelectorAll("." + name);
+    cs.forEach((c) => {
+      fromState(card, name, c, state);
+    });
   });
 }
 
@@ -319,14 +324,6 @@ function tileSetup(card, grid, element, state, index) {
     updateSaveBingoCardLink(card, state);
     fitText(getState(card), element);
   });
-
-  // Styling
-  styles.forEach(([name, f]) => {
-    // Apply from current state
-    applyStyle(f, element, state.style.item[name]);
-    // Register element for controls
-    hookUpStyleControls(card, element, "item", name, f);
-  });
 }
 
 // Helper
@@ -336,35 +333,13 @@ function removeAllChildren(element) {
   }
 }
 
-// When loading / starting, the controls should show the right values
-function setValuesOfControls(card, state) {
-  // Generic controls
-  controls.forEach(([name, f]) => {
-    const e = card.querySelector("." + name);
-    e.value = state[name];
-  });
-  // Styling
-  stylables.forEach((stylableElementName) => {
-    styles.forEach(([name, f]) => {
-      const e = card.querySelector(".style-".concat(stylableElementName).concat("-").concat(name));
-      if (e != undefined) {
-        if (e.getAttribute("type") != "file") {
-          e.value = state.style[stylableElementName][name];
-        } else {
-          e.value = "";
-        }
-      }
-    });
-  });
-}
-
 // Set up all functionality for bingo card controls
 function setUpBingoCardControls(card) {
   const grid = card.querySelector(".grid");
 
   // Instantiate controls
   const styleTemplate = card.querySelector(".style-template");
-  stylables.forEach((stylableElementName) => {
+  stylables.forEach(([stylableElementName, sF]) => {
     const newControls = styleTemplate.content.cloneNode(true);
     const newContainer = document.createElement("div");
     const heading = document.createElement("h3");
@@ -372,17 +347,16 @@ function setUpBingoCardControls(card) {
     newContainer.appendChild(heading);
     newContainer.appendChild(newControls);
     card.appendChild(newContainer);
-    styles.forEach(([name, f]) => {
-      const e = newContainer.querySelector(".style-".concat(name));
+    newContainer.querySelectorAll(".style").forEach((c) => {
+      const name = c.classList[1];
       if (defaultCard.style[stylableElementName][name] != undefined) {
-        e.classList.add("style-".concat(stylableElementName).concat("-").concat(name));
+        // Which element it styles
+        c.classList.add("style-" + stylableElementName);
       } else {
-        // Remove elment
-        newContainer.removeChild(e.parentElement);
+        newContainer.removeChild(c.parentElement);
       }
     });
   });
-  setValuesOfControls(card, defaultCard);
 
   // Create empty bingo card
   setState(card, defaultCard);
@@ -396,7 +370,6 @@ function setUpBingoCardControls(card) {
         const state = JSON.parse(v);
         setState(card, state);
         renderCard(card, grid, state);
-        setValuesOfControls(card, state);
       });
     }
   });
@@ -407,23 +380,19 @@ function setUpBingoCardControls(card) {
   updateSaveBingoCardLink(card, defaultCard);
 
   // Hook up controls
-  controls.forEach(([name, f]) => {
-    const e = card.querySelector("." + name);
-    e.addEventListener("change", () => {
-      // Set state
-      const newState = f(e, card, grid, getState(card));
-      setState(card, newState);
-      // Update link
-      updateSaveBingoCardLink(card, state);
+  controls.forEach(([name, fromState, toState]) => {
+    const cs = card.querySelectorAll("." + name);
+    cs.forEach((c) => {
+      c.addEventListener("change", () => {
+        // Set state
+        const state = toState(card, name, c, getState(card));
+        setState(card, state);
+        // Affect the DOM
+        fromState(card, name, c, state);
+        // Update link
+        updateSaveBingoCardLink(card, state);
+      });
     });
-  });
-
-  // Styling
-  styles.forEach(([name, f]) => {
-    // Set up controls for the name
-    hookUpStyleControls(card, grid, "grid", name, f);
-    hookUpStyleControls(card, card, "card", name, f);
-    // Styling for items: in tileSetup
   });
 }
 // Set up controls when app starts
