@@ -43,7 +43,7 @@ const defaultCard =
             "pixelSize": "420",
             "padding": "10",
             "backgroundColor": "#fff6e0",
-            "backgroundImage": "url('golden-banana.gif')",
+            "backgroundImage": "golden-banana.gif",
             "borderSpacing": "10",
             "borderStyle": "dashed",
             "borderWidth": "5",
@@ -54,6 +54,7 @@ const defaultCard =
             "padding": "3",
             "fontSize": "18",
             "backgroundColor": "#f9f06b",
+            "backgroundImage": "golden-banana.gif",
             "borderStyle": "solid",
             "borderColor": "#b5835a",
             "borderRadius": "5"
@@ -117,7 +118,7 @@ function cFromState(card, name, c, state) {
   c.value = state[name];
 }
 
-function cToState(card, name, c, state) {
+async function cToState(card, name, c, state) {
   state[name] = c.value;
   renderCard(card, card.querySelector(".grid"), state);
   return state;
@@ -131,7 +132,7 @@ function cFromStateStyle(card, name, c, state) {
   });
 }
 
-function cToStateStyle(card, name, c, state) {
+async function cToStateStyle(card, name, c, state) {
   forEachStylable(card, c, (sName, s) => {
     state.style[sName][name] = c.value;
   });
@@ -146,16 +147,44 @@ function cFromStateStylePixel(card, name, c, state) {
   });
 }
 
-function cFromStateStyleImage(card, name, c, state) {
-  forEachStylable(card, c, (sName, s) => {
-    const toApply = state.style[sName][name];
-    //c.value = toApply;
-    s.style[name] = "";
+async function bytesToBase64DataUrl(bytes, type = "application/octet-stream") {
+  return await new Promise((resolve, reject) => {
+    const reader = Object.assign(new FileReader(), {
+      onload: () => resolve(reader.result),
+      onerror: () => reject(reader.error),
+    });
+    reader.readAsDataURL(new File([bytes], "", { type }));
   });
 }
 
-function cToStateStyleImage(card, name, c, state) {
+async function dataUrlToBytes(dataUrl) {
+  const res = await fetch(dataUrl);
+  return new Uint8Array(await res.arrayBuffer());
 }
+
+function cFromStateStyleImage(card, name, c, state) {
+  forEachStylable(card, c, (sName, s) => {
+    const toApply = state.style[sName][name];
+    s.style[name] = "url('" + toApply + "')";
+  });
+}
+
+async function cToStateStyleImage(card, name, c, state) {
+  const [file] = c.files;
+  const url = await bytesToBase64DataUrl(file);
+  forEachStylable(card, c, (sName, s) => {
+    state.style[sName][name] = url;
+    console.log(url);
+  });
+  return state;
+}
+
+
+//  const [file] = c.files;
+//  forEachStylable(card, c, (sName, s) => {
+//    console.log(sName);
+//    console.log(state);
+//    state[sName][name] = URL.createObjectURL(file);
 
 // Change the text size to fit in the container
 function fitText(state, e) {
@@ -385,12 +414,13 @@ function setUpBingoCardControls(card) {
     cs.forEach((c) => {
       c.addEventListener("change", () => {
         // Set state
-        const state = toState(card, name, c, getState(card));
-        setState(card, state);
-        // Affect the DOM
-        fromState(card, name, c, state);
-        // Update link
-        updateSaveBingoCardLink(card, state);
+        toState(card, name, c, getState(card)).then(state => {
+          setState(card, state);
+          // Affect the DOM
+          fromState(card, name, c, state);
+          // Update link
+          updateSaveBingoCardLink(card, state);
+        });
       });
     });
   });
