@@ -54,7 +54,7 @@ const defaultCard =
             "padding": "3",
             "fontSize": "18",
             "backgroundColor": "#f9f06b",
-            "backgroundImage": "golden-banana.gif",
+            "backgroundImage": "",
             "borderStyle": "solid",
             "borderColor": "#b5835a",
             "borderRadius": "5"
@@ -242,6 +242,20 @@ function setItemState(card, index, field, value) {
   setState(card, state);
 }
 
+// Padds the list if new index is used
+function getItemState(card, index, field) {
+  const state = getState(card);
+  // Fill in needed intries if new text is added
+  if (index >= state.items.length) {
+    let additionalItems = Array(index + 1 - state.items.length);
+    for (let i = 0; i < additionalItems.length; i++) {
+      additionalItems[i] = { text: defaultItemText };
+    }
+    state.items = state.items.concat(additionalItems);
+  }
+  return state.items[index][field];
+}
+
 // Update the link that saves your bingo card
 function updateSaveBingoCardLink (card, state) {
   const saveElement = card.querySelector(".save");
@@ -339,10 +353,14 @@ function tileSetup(card, grid, element, state, index) {
   // Crossing
   element.addEventListener("contextmenu", (event) => {
     event.preventDefault();
-    if (!element.classList.contains("crossed")) {
-      element.classList.add("crossed");
+    if (getItemState(card, index, "crossed")) {
+      console.log("gooo");
+      element.style.backgroundImage = "";
+      setItemState(card, index, "crossed", false);
     } else {
-      element.classList.remove("crossed");
+      console.log("dooo");
+      element.style.backgroundImage = "url('golden-banana.gif')";
+      setItemState(card, index, "crossed", true);
     }
   });
   // Update save link on change
