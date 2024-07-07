@@ -79,7 +79,8 @@ const stylables = [
 // v: value, e: element
 const controls = [
   // Styles
-  ["pixelSize", (card, name, c, state) => {
+  ["pixelSize", (card, name, c) => {
+    const state = getState(card);
     forEachStylable(card, c, (sName, s) => {
       const toApply = state.style[sName][name];
       c.value = toApply;
@@ -114,17 +115,19 @@ function forEachStylable(card, c, f) {
   });
 }
 
-function cFromState(card, name, c, state) {
-  c.value = state[name];
+function cFromState(card, name, c) {
+  c.value = getState(card)[name];
 }
 
-async function cToState(card, name, c, state) {
+async function cToState(card, name, c) {
+  const state = getState(card);
   state[name] = c.value;
   renderCard(card, card.querySelector(".grid"), state);
-  return state;
+  setState(card, state);
 }
 
-function cFromStateStyle(card, name, c, state) {
+function cFromStateStyle(card, name, c) {
+  const state = getState(card);
   forEachStylable(card, c, (sName, s) => {
     const toApply = state.style[sName][name];
     c.value = toApply;
@@ -132,20 +135,41 @@ function cFromStateStyle(card, name, c, state) {
   });
 }
 
-async function cToStateStyle(card, name, c, state) {
+async function cToStateStyle(card, name, c) {
+  const state = getState(card);
   forEachStylable(card, c, (sName, s) => {
     state.style[sName][name] = c.value;
   });
-  return state;
+  setState(card, state);
 }
 
-function cFromStateStylePixel(card, name, c, state) {
+function cFromStateStylePixel(card, name, c) {
+  const state = getState(card);
   forEachStylable(card, c, (sName, s) => {
     const toApply = state.style[sName][name];
     c.value = toApply;
     s.style[name] = toApply + "px";
   });
 }
+
+function cFromStateStyleImage(card, name, c) {
+  const state = getState(card);
+  forEachStylable(card, c, (sName, s) => {
+    const toApply = state.style[sName][name];
+    s.style[name] = "url('" + toApply + "')";
+  });
+}
+
+async function cToStateStyleImage(card, name, c) {
+  const [file] = c.files;
+  const url = await bytesToBase64DataUrl(file);
+  const state = getState(card);
+  forEachStylable(card, c, (sName, s) => {
+    state.style[sName][name] = url;
+  });
+  setState(card, state);
+}
+
 
 async function bytesToBase64DataUrl(bytes, type = "application/octet-stream") {
   return await new Promise((resolve, reject) => {
@@ -160,23 +184,6 @@ async function bytesToBase64DataUrl(bytes, type = "application/octet-stream") {
 async function dataUrlToBytes(dataUrl) {
   const res = await fetch(dataUrl);
   return new Uint8Array(await res.arrayBuffer());
-}
-
-function cFromStateStyleImage(card, name, c, state) {
-  forEachStylable(card, c, (sName, s) => {
-    const toApply = state.style[sName][name];
-    s.style[name] = "url('" + toApply + "')";
-  });
-}
-
-async function cToStateStyleImage(card, name, c, state) {
-  const [file] = c.files;
-  const url = await bytesToBase64DataUrl(file);
-  forEachStylable(card, c, (sName, s) => {
-    state.style[sName][name] = url;
-    console.log(url);
-  });
-  return state;
 }
 
 
@@ -432,10 +439,10 @@ function setUpBingoCardControls(card) {
     cs.forEach((c) => {
       c.addEventListener("change", () => {
         // Set state
-        toState(card, name, c, getState(card)).then(state => {
-          setState(card, state);
+        toState(card, name, c).then(() => {
+          const state = getState(card);
           // Affect the DOM
-          fromState(card, name, c, state);
+          fromState(card, name, c);
           // Update link
           updateSaveBingoCardLink(card, state);
         });
