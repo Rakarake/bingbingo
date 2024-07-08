@@ -349,13 +349,6 @@ function renderCard (card, grid, state) {
     // Load text
     bingoText.innerText = state.items[i].text;
 
-    // Set width and height to share the available space
-    bingoItem.style.width = ((1.0 / state.size) * 100).toFixed(3).concat("%");
-    bingoItem.style.height = ((1.0 / state.size) * 100).toFixed(3).concat("%");
-
-    // Fit text
-    fitText(state, bingoItem);
-
     // Set crossed or not
     if (state.items[i].crossed == "true") {
       bingoItem.classList.add("crossed");
@@ -370,6 +363,19 @@ function renderCard (card, grid, state) {
     cs.forEach((c) => {
       fromState(card, name, c, state);
     });
+  });
+
+  // For fitting text, all text needs to be as small as possible
+  allBingoItems.forEach(bingoItem => {
+    bingoItem.style.fontSize = "1px";
+  });
+  allBingoItems.forEach(bingoItem => {
+    // Set width and height to share the available space
+    bingoItem.style.width = ((1.0 / state.size) * 100).toFixed(3).concat("%");
+    bingoItem.style.height = ((1.0 / state.size) * 100).toFixed(3).concat("%");
+
+    // Fit text
+    fitText(state, bingoItem);
   });
 }
 
