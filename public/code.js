@@ -414,6 +414,10 @@ function removeAllChildren(element) {
 function setUpBingoCardControls(card) {
   const grid = card.querySelector(".grid");
 
+  // Create empty bingo card
+  setState(card, defaultCard);
+  renderCard(card, grid, defaultCard);
+
   // Instantiate controls
   const styleTemplate = card.querySelector(".style-template");
   stylables.forEach(([stylableElementName, sF]) => {
@@ -434,10 +438,6 @@ function setUpBingoCardControls(card) {
       }
     });
   });
-
-  // Create empty bingo card
-  setState(card, defaultCard);
-  renderCard(card, grid, defaultCard);
 
   // Load: remake bingo card according to specified file
   const loadElement = card.querySelector(".load");
@@ -468,6 +468,8 @@ function setUpBingoCardControls(card) {
       });
     });
   });
+
+  renderCard(card, grid, defaultCard);
 }
 // Set up controls when app starts
 document.querySelectorAll(".card").forEach((element) => {
