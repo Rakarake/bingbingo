@@ -59,15 +59,25 @@ const defaultCard =
             "borderColor": "#b5835a",
             "borderRadius": "5"
         },
+        "crossed": {
+            "padding": "3",
+            "fontSize": "18",
+            "backgroundColor": "#ffffff",
+            "backgroundImage": "",
+            "borderStyle": "solid",
+            "borderColor": "#b5835a",
+            "borderRadius": "5"
+        },
         "card": {}
     }
 }
 
 // The names of the stylable elements
 const stylables = [
-  ["grid", c => c.querySelectorAll(".grid")] ,
-  ["item", c => c.querySelectorAll(".bingo-item")],
-  ["card", c => [c]]
+  ["grid",    c => c.querySelectorAll(".grid")] ,
+  ["card",    c => [c]],
+  ["item",    c => c.querySelectorAll(".bingo-item")],
+  ["crossed", c => c.querySelectorAll(".crossed")]
 ];
 
 
@@ -107,6 +117,7 @@ const controls = [
 function forEachStylable(card, c, f) {
   stylables.forEach(([stylableName, sF]) => {
     if (c.classList.contains("style-" + stylableName)) {
+      console.log(stylableName);
       const es = sF(card);
       es.forEach(e => {
         f(stylableName, e);
@@ -361,14 +372,15 @@ function tileSetup(card, grid, element, state, index) {
   element.addEventListener("contextmenu", (event) => {
     event.preventDefault();
     if (getItemState(card, index, "crossed")) {
-      console.log("gooo");
-      element.style.backgroundImage = "";
+      element.classList.remove("crossed");
+      element.classList.add("bingo-item");
       setItemState(card, index, "crossed", false);
     } else {
-      console.log("dooo");
-      element.style.backgroundImage = "url('golden-banana.gif')";
+      element.classList.add("crossed");
+      element.classList.remove("bingo-item");
       setItemState(card, index, "crossed", true);
     }
+    renderCard(card, grid, getState(card));
   });
   // Update save link on change
   textElement = element.querySelector(".bingo-text");
