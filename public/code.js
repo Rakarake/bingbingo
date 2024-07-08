@@ -150,8 +150,8 @@ async function cToStateSize(card, name, c) {
   const state = getState(card);
   const size = c.value;
   // Fill in needed intries if new text is added
-  if (size > state.items.length) {
-    let additionalItems = Array(size - state.items.length);
+  if (size*size > state.items.length) {
+    let additionalItems = Array(size*size - state.items.length);
     for (let i = 0; i < additionalItems.length; i++) {
       additionalItems[i] = defaultItem;
     }
@@ -300,10 +300,10 @@ emptyBingoTile.append(emptyBingoTileText);
 // Create a bingo card from state
 function renderCard (card, grid, state) {
   // Add new / remove unwanted elements
-  const addChild = (parent, index) => {
+  const addChild = (parent) => {
     const newNode = emptyBingoTile.cloneNode(true);
     parent.appendChild(newNode);
-    tileSetup(card, grid, newNode, state, index);
+    tileSetup(card, grid, newNode, state);
   }
   const currentSize = grid.children.length;
   const newSize = state.size;
@@ -315,7 +315,7 @@ function renderCard (card, grid, state) {
     // Add to existing rows
     for (let i = 0; i < currentSize; i++) {
       for (let j = 0; j < diff; j++) {
-        addChild(grid.children[i], i*newSize + currentSize + j);
+        addChild(grid.children[i]);
       }
     }
     // Add new rows
@@ -323,7 +323,7 @@ function renderCard (card, grid, state) {
       const newRow = document.createElement("tr");
       grid.appendChild(newRow);
       for (let j = 0; j < newSize; j++) {
-        addChild(newRow, (currentSize+i)*newSize + j)
+        addChild(newRow);
       }
     }
   } else {
@@ -365,24 +365,34 @@ function renderCard (card, grid, state) {
     });
   });
 
-  // For fitting text, all text needs to be as small as possible
   allBingoItems.forEach(bingoItem => {
+    // For fitting text, all text needs to be as small as possible
     bingoItem.style.fontSize = "1px";
-  });
-  allBingoItems.forEach(bingoItem => {
+
     // Set width and height to share the available space
     bingoItem.style.width = ((1.0 / state.size) * 100).toFixed(3).concat("%");
     bingoItem.style.height = ((1.0 / state.size) * 100).toFixed(3).concat("%");
-
+  });
+  allBingoItems.forEach(bingoItem => {
     // Fit text
     fitText(state, bingoItem);
   });
 }
 
+function getItemIndex(card, item) {
+  const items = card.querySelectorAll(".bingo-item");
+  for (let i = 0; i < items.length; i++) {
+    if (items[i] == item) {
+      return i;
+    }
+  }
+}
+
 // Set up event listeners for a tile
-function tileSetup(card, grid, element, state, index) {
+function tileSetup(card, grid, element, state) {
   // Crossing
   element.addEventListener("contextmenu", (event) => {
+    const index = getItemIndex(card, element);
     event.preventDefault();
     if (getItemState(card, index, "crossed") == "true") {
       console.log("uncrossing");
@@ -396,6 +406,7 @@ function tileSetup(card, grid, element, state, index) {
   // Update save link on change
   textElement = element.querySelector(".bingo-text");
   textElement.addEventListener("input", (e) => {
+    const index = getItemIndex(card, element);
     // Update the state
     setItemState(card, index, "text", e.currentTarget.innerText);
     const state = getState(card);
