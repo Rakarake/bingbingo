@@ -37,7 +37,7 @@ const defaultCard =
 {
     "size": "4",
     "items": Array(16).fill(defaultItem),
-    "tolerance": "0.8",
+    "tolerance": "3",
     "style": {
         "grid": {
             "pixelSize": "420",
