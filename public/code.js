@@ -349,12 +349,12 @@ function renderCard (card, grid, state) {
     // Load text
     bingoText.innerText = state.items[i].text;
 
-    // Fit text
-    fitText(state, bingoItem);
-
     // Set width and height to share the available space
     bingoItem.style.width = ((1.0 / state.size) * 100).toFixed(3).concat("%");
     bingoItem.style.height = ((1.0 / state.size) * 100).toFixed(3).concat("%");
+
+    // Fit text
+    fitText(state, bingoItem);
 
     // Set crossed or not
     if (state.items[i].crossed == "true") {
@@ -457,6 +457,7 @@ function setUpBingoCardControls(card) {
           const state = getState(card);
           // Affect the DOM
           fromState(card, name, c);
+          renderCard(card, grid, state);
         });
       });
     });
