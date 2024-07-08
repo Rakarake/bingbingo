@@ -91,12 +91,13 @@ const controls = [
   // Styles
   ["pixelSize", (card, name, c) => {
     const state = getState(card);
-    forEachStylable(card, c, (sName, s) => {
-      const toApply = state.style[sName][name];
-      c.value = toApply;
+    const sName = getStylableName(card, c);
+    const toApply = state.style[sName][name];
+    forEachStylable(card, c, (s) => {
       s.style.width = toApply + "px";
       s.style.height = toApply + "px";
     });
+    c.value = toApply;
   }, cToStateStyle],
   ["backgroundColor", cFromStateStyle,      cToStateStyle],
   ["backgroundImage", cFromStateStyleImage, cToStateStyleImage],
@@ -117,13 +118,21 @@ const controls = [
 function forEachStylable(card, c, f) {
   stylables.forEach(([stylableName, sF]) => {
     if (c.classList.contains("style-" + stylableName)) {
-      console.log(stylableName);
       const es = sF(card);
       es.forEach(e => {
-        f(stylableName, e);
+        f(e);
       });
     }
   });
+}
+function getStylableName(card, c) {
+  for (let i = 0; i < stylables.length; i++) {
+    const [stylableName, sF] = stylables[i];
+    if (c.classList.contains("style-" + stylableName)) {
+      return stylableName;
+    }
+  }
+  throw new Error('gooobagoo', c);
 }
 
 function cFromState(card, name, c) {
@@ -139,16 +148,18 @@ async function cToState(card, name, c) {
 
 function cFromStateStyle(card, name, c) {
   const state = getState(card);
-  forEachStylable(card, c, (sName, s) => {
-    const toApply = state.style[sName][name];
-    c.value = toApply;
+  const sName = getStylableName(card, c);
+  const toApply = state.style[sName][name];
+  forEachStylable(card, c, (s) => {
     s.style[name] = toApply;
   });
+  c.value = toApply;
 }
 
 async function cToStateStyle(card, name, c) {
   const state = getState(card);
-  forEachStylable(card, c, (sName, s) => {
+  const sName = getStylableName(card, c);
+  forEachStylable(card, c, (s) => {
     state.style[sName][name] = c.value;
   });
   setState(card, state);
@@ -156,17 +167,19 @@ async function cToStateStyle(card, name, c) {
 
 function cFromStateStylePixel(card, name, c) {
   const state = getState(card);
-  forEachStylable(card, c, (sName, s) => {
-    const toApply = state.style[sName][name];
-    c.value = toApply;
+  const sName = getStylableName(card, c);
+  const toApply = state.style[sName][name];
+  forEachStylable(card, c, (s) => {
     s.style[name] = toApply + "px";
   });
+  c.value = toApply;
 }
 
 function cFromStateStyleImage(card, name, c) {
   const state = getState(card);
-  forEachStylable(card, c, (sName, s) => {
-    const toApply = state.style[sName][name];
+  const sName = getStylableName(card, c);
+  const toApply = state.style[sName][name];
+  forEachStylable(card, c, (s) => {
     s.style[name] = "url('" + toApply + "')";
   });
 }
@@ -175,7 +188,8 @@ async function cToStateStyleImage(card, name, c) {
   const [file] = c.files;
   const url = await bytesToBase64DataUrl(file);
   const state = getState(card);
-  forEachStylable(card, c, (sName, s) => {
+  const sName = getStylableName(card, c);
+  forEachStylable(card, c, (s) => {
     state.style[sName][name] = url;
   });
   setState(card, state);
@@ -200,8 +214,6 @@ async function dataUrlToBytes(dataUrl) {
 
 //  const [file] = c.files;
 //  forEachStylable(card, c, (sName, s) => {
-//    console.log(sName);
-//    console.log(state);
 //    state[sName][name] = URL.createObjectURL(file);
 
 // Change the text size to fit in the container
