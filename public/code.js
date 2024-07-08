@@ -76,7 +76,7 @@ const defaultCard =
 const stylables = [
   ["grid",    c => c.querySelectorAll(".grid")] ,
   ["card",    c => [c]],
-  ["item",    c => c.querySelectorAll(".bingo-item")],
+  ["item",    c => c.querySelectorAll(".bingo-item:not(crossed)")],
   ["crossed", c => c.querySelectorAll(".crossed")]
 ];
 
@@ -385,11 +385,9 @@ function tileSetup(card, grid, element, state, index) {
     event.preventDefault();
     if (getItemState(card, index, "crossed")) {
       element.classList.remove("crossed");
-      element.classList.add("bingo-item");
       setItemState(card, index, "crossed", false);
     } else {
       element.classList.add("crossed");
-      element.classList.remove("bingo-item");
       setItemState(card, index, "crossed", true);
     }
     renderCard(card, grid, getState(card));
