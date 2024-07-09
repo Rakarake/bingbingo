@@ -25,6 +25,10 @@ for the JavaScript code in this page.
 
 console.log("amongus 🤨");
 
+// Global state among cards!
+// Hash of the original file url is the key, blob reference is the value
+const cachedFiles = new Map();
+
 // 'card' is the outermost element, most commonly used
 // 'grid' is the grid holding the items
 // 'item' is the tiles that make up the card
@@ -193,19 +197,31 @@ function cFromStateStylePixel(card, name, c) {
 function cFromStateStyleImage(card, name, c) {
   const state = getState(card);
   const sName = getStylableName(card, c);
-  const toApply = state.style[sName][name];
-  forEachStylable(card, c, (s) => {
-    s.style[name] = "url('" + toApply + "')";
-  });
+  if (state.style[sName][name] != "") {
+    const hash = state.style[sName][name].hash;
+    const fileUrl = cachedFiles.get(hash);
+    if (fileUrl == undefined) {
+      cachedFiles.set(hash, state.style[sName][name].url);
+    }
+    forEachStylable(card, c, (s) => {
+      console.log(fileUrl);
+      s.style[name] = "url('" + fileUrl + "')";
+    });
+  }
 }
 
 async function cToStateStyleImage(card, name, c) {
   const [file] = c.files;
   const url = await bytesToBase64DataUrl(file);
+  const urlObject = new URL(url);
+  const hash = urlObject.hash;
+  const inMemoryFile = dataURLtoFile(url, "image.png");
+  const fileUrl = URL.createObjectURL(inMemoryFile);
   const state = getState(card);
   const sName = getStylableName(card, c);
   forEachStylable(card, c, (s) => {
-    state.style[sName][name] = url;
+    state.style[sName][name] = { hash: hash, url: url };
+    cachedFiles.set(hash, fileUrl);
   });
   setState(card, state);
 }
@@ -226,6 +242,17 @@ async function dataUrlToBytes(dataUrl) {
   return new Uint8Array(await res.arrayBuffer());
 }
 
+function dataURLtoFile(dataurl, filename) {
+  var arr = dataurl.split(','),
+    mime = arr[0].match(/:(.*?);/)[1],
+    bstr = atob(arr[arr.length - 1]),
+    n = bstr.length,
+    u8arr = new Uint8Array(n);
+  while(n--){
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new File([u8arr], filename, {type:mime});
+}
 
 // Change the text size to fit in the container
 function fitText(state, e) {
