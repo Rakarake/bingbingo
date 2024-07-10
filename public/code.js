@@ -80,7 +80,7 @@ const defaultCard =
 const stylables = [
   ["grid",    c => c.querySelectorAll(".grid")] ,
   ["card",    c => [c]],
-  ["item",    c => c.querySelectorAll(".bingo-item:not(crossed)")],
+  ["item",    c => c.querySelectorAll(".bingo-item:not(.crossed)")],
   ["crossed", c => c.querySelectorAll(".crossed")]
 ];
 
