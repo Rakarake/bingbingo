@@ -85,7 +85,7 @@ for (let i = 0; i < defaultCard.items.length; i++) {
 // The names of the stylable elements
 const stylables = [
   ["grid",    c => c.querySelectorAll(".grid")] ,
-  ["item",    c => {console.log(c.querySelectorAll(".bingo-item:not(.crossed)")); return c.querySelectorAll(".bingo-item:not(.crossed)")}],
+  ["item",    c => c.querySelectorAll(".bingo-item:not(.crossed)")],
   ["crossed", c => c.querySelectorAll(".crossed")]
 ];
 
@@ -204,7 +204,6 @@ function cFromStateStyleImage(card, name, c) {
       cachedFiles.set(hash, state.style[sName][name].url);
     }
     forEachStylable(card, c, (s) => {
-      console.log(s);
       s.style[name] = "url('" + fileUrl + "')";
     });
   } else {
@@ -257,6 +256,8 @@ function dataURLtoFile(dataurl, filename) {
 
 // Change the text size to fit in the container
 function fitText(state, e) {
+  const wantedFontSize = e.classList.contains("crossed") ?
+    state.style.crossed.fontSize : state.style.item.fontSize;
   const tolerance = parseFloat(state.tolerance);
   const size = parseInt(state.size);
   const gridSize = parseInt(state.style.grid.pixelSize);
@@ -267,7 +268,7 @@ function fitText(state, e) {
     (gridSize - (borderSpacing * (size + 1) + gridPadding*2 + gridBorderWidth*2))
     / size + tolerance;
 
-  let fontSize =  Number(e.style.fontSize.substring(0, e.style.fontSize.length - 2.0));
+  let fontSize = Number(e.style.fontSize.substring(0, e.style.fontSize.length - 2.0));
 
   // Compute the biggest dimension of the rect
   const cOutlier = () => {
@@ -275,7 +276,7 @@ function fitText(state, e) {
     return Math.max(rect.width, rect.height) - tolerance;
   };
   // Maximize as much as until rect grows
-  while (fontSize < state.style.item.fontSize) {
+  while (fontSize < wantedFontSize) {
     if (cOutlier() > expected) {
       break;
     }
@@ -300,7 +301,6 @@ function setState(card, state) {
 function setItemState(card, index, field, value) {
   const state = getState(card);
   state.items[index][field] = value;
-  console.log(state.items[index] == state.items[index+1]);
 }
 function getItemState(card, index, field) {
   const state = getState(card);
