@@ -85,7 +85,7 @@ for (let i = 0; i < defaultCard.items.length; i++) {
 // The names of the stylable elements
 const stylables = [
   ["grid",    c => c.querySelectorAll(".grid")] ,
-  ["item",    c => c.querySelectorAll(".bingo-item:not(.crossed)")],
+  ["item",    c => {console.log(c.querySelectorAll(".bingo-item:not(.crossed)")); return c.querySelectorAll(".bingo-item:not(.crossed)")}],
   ["crossed", c => c.querySelectorAll(".crossed")]
 ];
 
@@ -181,9 +181,7 @@ function cFromStateStyle(card, name, c) {
 async function cToStateStyle(card, name, c) {
   const state = getState(card);
   const sName = getStylableName(card, c);
-  forEachStylable(card, c, (s) => {
-    state.style[sName][name] = c.value;
-  });
+  state.style[sName][name] = c.value;
 }
 
 function cFromStateStylePixel(card, name, c) {
@@ -225,10 +223,8 @@ async function cToStateStyleImage(card, name, c) {
   const fileUrl = URL.createObjectURL(inMemoryFile);
   const state = getState(card);
   const sName = getStylableName(card, c);
-  forEachStylable(card, c, (s) => {
-    state.style[sName][name] = { hash: hash, url: url };
-    cachedFiles.set(hash, fileUrl);
-  });
+  state.style[sName][name] = { hash: hash, url: url };
+  cachedFiles.set(hash, fileUrl);
 }
 
 
