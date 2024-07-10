@@ -26,6 +26,8 @@ for the JavaScript code in this page.
 console.log("amongus 🤨");
 
 // Global state among cards!
+// Mapping from card element to it's state object
+const allCardState = new Map();
 // Hash of the original file url is the key, blob reference is the value
 const cachedFiles = new Map();
 
@@ -40,7 +42,7 @@ const defaultItem = { text: "1", crossed: false, };
 const defaultCard =
 {
     "size": "4",
-    "items": Array(16).fill(defaultItem),
+    "items": null,
     "tolerance": "3",
     "style": {
         "grid": {
@@ -72,14 +74,17 @@ const defaultCard =
             "borderColor": "#b5835a",
             "borderRadius": "5"
         },
-        "card": {}
     }
+}
+// Initialize the items
+defaultCard.items = Array(16);
+for (let i = 0; i < defaultCard.items.length; i++) {
+  defaultCard.items[i] = structuredClone(defaultItem);
 }
 
 // The names of the stylable elements
 const stylables = [
   ["grid",    c => c.querySelectorAll(".grid")] ,
-  ["card",    c => [c]],
   ["item",    c => c.querySelectorAll(".bingo-item:not(.crossed)")],
   ["crossed", c => c.querySelectorAll(".crossed")]
 ];
@@ -147,7 +152,6 @@ async function cToState(card, name, c) {
   const state = getState(card);
   state[name] = c.value;
   renderCard(card, card.querySelector(".grid"), state);
-  setState(card, state);
 }
 
 async function cToStateSize(card, name, c) {
@@ -162,7 +166,6 @@ async function cToStateSize(card, name, c) {
     state.items = state.items.concat(additionalItems);
   }
   state[name] = size;
-  setState(card, state);
 }
 
 function cFromStateStyle(card, name, c) {
@@ -181,7 +184,6 @@ async function cToStateStyle(card, name, c) {
   forEachStylable(card, c, (s) => {
     state.style[sName][name] = c.value;
   });
-  setState(card, state);
 }
 
 function cFromStateStylePixel(card, name, c) {
@@ -204,8 +206,12 @@ function cFromStateStyleImage(card, name, c) {
       cachedFiles.set(hash, state.style[sName][name].url);
     }
     forEachStylable(card, c, (s) => {
-      console.log(fileUrl);
+      console.log(s);
       s.style[name] = "url('" + fileUrl + "')";
+    });
+  } else {
+    forEachStylable(card, c, (s) => {
+      s.style[name] = "";
     });
   }
 }
@@ -223,7 +229,6 @@ async function cToStateStyleImage(card, name, c) {
     state.style[sName][name] = { hash: hash, url: url };
     cachedFiles.set(hash, fileUrl);
   });
-  setState(card, state);
 }
 
 
@@ -290,16 +295,16 @@ function fitText(state, e) {
 
 // Helpers for state
 function getState(card) {
-  return JSON.parse(card.dataset.state);
+  return allCardState.get(card);
 }
 function setState(card, state) {
-  card.dataset.state = JSON.stringify(state, null, 4);
+  allCardState.set(card, state);
   updateSaveBingoCardLink(card, state);
 }
 function setItemState(card, index, field, value) {
   const state = getState(card);
   state.items[index][field] = value;
-  setState(card, state);
+  console.log(state.items[index] == state.items[index+1]);
 }
 function getItemState(card, index, field) {
   const state = getState(card);
@@ -422,10 +427,10 @@ function tileSetup(card, grid, element, state) {
     const index = getItemIndex(card, element);
     event.preventDefault();
     if (getItemState(card, index, "crossed") == "true") {
-      console.log("uncrossing");
+      console.log('uncross');
       setItemState(card, index, "crossed", "false");
     } else {
-      console.log("crossing");
+      console.log('cross');
       setItemState(card, index, "crossed", "true");
     }
     renderCard(card, grid, getState(card));
@@ -436,7 +441,6 @@ function tileSetup(card, grid, element, state) {
     const index = getItemIndex(card, element);
     // Update the state
     setItemState(card, index, "text", e.currentTarget.innerText);
-    const state = getState(card);
     fitText(getState(card), element);
   });
 }
