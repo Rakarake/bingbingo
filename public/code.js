@@ -434,6 +434,7 @@ function tileSetup(card, grid, element, state) {
       setItemState(card, index, "crossed", "true");
     }
     renderCard(card, grid, getState(card));
+    updateSaveBingoCardLink(card, state);
   });
   // Update save link on change
   textElement = element.querySelector(".bingo-text");
@@ -442,6 +443,7 @@ function tileSetup(card, grid, element, state) {
     // Update the state
     setItemState(card, index, "text", e.currentTarget.innerText);
     fitText(getState(card), element);
+    updateSaveBingoCardLink(card, state);
   });
 }
 
@@ -506,6 +508,7 @@ function setUpBingoCardControls(card) {
           // Affect the DOM
           fromState(card, name, c);
           renderCard(card, grid, state);
+          updateSaveBingoCardLink(card, state);
         });
       });
     });
