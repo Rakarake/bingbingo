@@ -7,31 +7,39 @@
     <title>🗿 bingbingo</title>
   </head>
     <body>
-      <h1>The BING 🗿 bingo!</h1>
-      <p>Right click/touch-and-hold to cross for one step closer to BINGO</p>
-      <p>Press TAB to go to the next item, SHIFT-TAB to go to the previous</p>
+      <div class="resp-margin">
+        <h1>The BING 🗿 bingo!</h1>
+        <p>Right click/touch-and-hold to cross for one step closer to BINGO.</p>
+        <p>Press TAB to go to the next item, SHIFT-TAB to go to the previous.</p>
+        <p>Want to save the bingo board as an image? In Firefox, right click and
+        select "Take Screenshot", then select the board and press download.</p>
+      </div>
       <div class="card">
         <table class="grid"></table>
-        <label>Load board:
-        <input class="load" type="file"></label>
-        <br>
-        <label>Save board:
-        <a class="save">Download</a></label>
-        <br>
-        <label>Number of items wide:
-        <select class="size">
-          <option value="3">3x3</option>
-          <option value="4">4x4</option>
-          <option value="5">5x5</option>
-          <option value="6">6x6</option>
-          <option value="7">7x7</option>
-          <option value="8">8x8</option>
-        </select></label>
-        <br>
-        <h2>Styling</h2>
-        <div class="style-section-container"></div>
-        <button class="collapsible style-section-heading">Other</button>
-        <label>Tolerance <input type="number" class="tolerance"></label>
+        <div>
+          <label>Load board:
+          <input class="load" type="file"></label>
+          <br>
+          <label>Save board:
+          <a class="save">Download</a></label>
+          <br>
+          <label>Number of items wide:
+          <select class="size">
+            <option value="3">3x3</option>
+            <option value="4">4x4</option>
+            <option value="5">5x5</option>
+            <option value="6">6x6</option>
+            <option value="7">7x7</option>
+            <option value="8">8x8</option>
+          </select></label>
+          <br>
+          <h2>Styling</h2>
+          <div class="style-section-container"></div>
+          <button class="collapsible style-section-heading">Other</button>
+          <div class="style-section">
+            <label>Tolerance <input type="number" class="tolerance"></label>
+          </div>
+        </div>
       </div>
       <template class="style-section-template">
         <br><button class="collapsible style-section-heading">Collapse</button>
@@ -60,7 +68,7 @@
         </div>
       </template>
       <br>
-      <footer>
+      <footer class="resp-margin">
         bingbingo 🗿 is MDF copyright and free software!
         <a href="COPYING">Lisence</a>
         <a href="https://github.com/Rakarake/bingbingo">Source</a>

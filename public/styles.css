@@ -1,29 +1,39 @@
-.grid {
-  /*padding: 5px;*/
-  background: pink;
-  /*border-radius: 4px;*/
-  width: 400px;
-  height: 400px;
-  /*border: 3px solid purple;*/
+/* Bingo board necesseties */
+.grid,.bingo-item,.crossed {
   background-size: 100% 100%;
 }
-
-.bingo-item {
-  background-color: lightcyan;
-  background-size: 100% 100%;
-}
-
-.crossed {
-  background-color: lightcyan;
-  background-size: 100% 100%;
-}
-
 .bingo-text {
   text-align: center;
 }
 
+/* General page styling */
+.card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.grid {
+  margin: 20px; /* Optional: Add some spacing between elements */
+}
+
 .style-section-heading {
   cursor: pointer;
-  width: 100%;
+}
+
+/* Mobile */
+.resp-margin {
+    margin-left: 2%;
+}
+/* Tablet */
+@media (min-width:600px) {
+    .resp-margin {
+        margin-left: 10%;
+    }
+}
+/* Desktop */
+@media (min-width:900px) {
+    .resp-margin {
+        margin-left: 15%;
+    }
 }
 
