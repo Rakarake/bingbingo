@@ -161,7 +161,7 @@ async function cToStateSize(card, name, c) {
   if (size*size > state.items.length) {
     let additionalItems = Array(size*size - state.items.length);
     for (let i = 0; i < additionalItems.length; i++) {
-      additionalItems[i] = defaultItem;
+      additionalItems[i] = structuredClone(defaultItem) ;
     }
     state.items = state.items.concat(additionalItems);
   }
@@ -435,19 +435,13 @@ function tileSetup(card, grid, element, state) {
   // Update save link on change
   textElement = element.querySelector(".bingo-text");
   textElement.addEventListener("input", (e) => {
+    const element = e.currentTarget.parentElement;
     const index = getItemIndex(card, element);
     // Update the state
     setItemState(card, index, "text", e.currentTarget.innerText);
     fitText(getState(card), element);
     updateSaveBingoCardLink(card, state);
   });
-}
-
-// Helper
-function removeAllChildren(element) {
-  while (element.firstChild) {
-    element.removeChild(element.firstChild);
-  }
 }
 
 // Set up all functionality for bingo card controls
