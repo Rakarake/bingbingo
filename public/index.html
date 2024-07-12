@@ -29,8 +29,13 @@
         </select></label>
         <br>
         <h2>Styling</h2>
+        <div class="style-section-container"></div>
+        <button class="collapsible style-section-heading">Other</button>
         <label>Tolerance <input type="number" class="tolerance"></label>
-        <template class="style-template">
+      </div>
+      <template class="style-section-template">
+        <br><button class="collapsible style-section-heading">Collapse</button>
+        <div class="style-section">
           <label>Size <input type="number" class="style pixelSize"><br></label>
           <label>Padding <input type="number" class="style padding"><br></label>
           <label>Background color <input type="color" class="style backgroundColor"><br></label>
@@ -52,8 +57,8 @@
               <option value="ridge">ridge</option>
             </select>
           <br></label>
-        </template>
-      </div>
+        </div>
+      </template>
       <br>
       <footer>
         bingbingo 🗿 is MDF copyright and free software!

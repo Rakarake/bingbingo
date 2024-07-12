@@ -217,7 +217,6 @@ async function cToStateStyleImage(card, name, c) {
   const [file] = c.files;
   const url = await bytesToBase64DataUrl(file);
   const hash = cyrb53(url);
-  console.log(hash);
   const inMemoryFile = dataURLtoFile(url, "image.png");
   const fileUrl = URL.createObjectURL(inMemoryFile);
   const state = getState(card);
@@ -468,24 +467,21 @@ function setUpBingoCardControls(card) {
   renderCard(card, grid, defaultCard);
 
   // Instantiate controls
-  const styleTemplate = card.querySelector(".style-template");
+  const styleSection = card.querySelector(".style-section-container");
+  const styleTemplate = document.querySelector(".style-section-template");
   stylables.forEach(([stylableElementName, sF]) => {
     const newControls = styleTemplate.content.cloneNode(true);
-    const newContainer = document.createElement("div");
-    const heading = document.createElement("h3");
-    heading.innerText = stylableElementName;
-    newContainer.appendChild(heading);
-    newContainer.appendChild(newControls);
-    card.appendChild(newContainer);
-    newContainer.querySelectorAll(".style").forEach((c) => {
+    newControls.querySelector(".style-section-heading").innerText = stylableElementName;
+    newControls.querySelectorAll(".style").forEach((c) => {
       const name = c.classList[1];
       if (defaultCard.style[stylableElementName][name] != undefined) {
         // Which element it styles
         c.classList.add("style-" + stylableElementName);
       } else {
-        newContainer.removeChild(c.parentElement);
+        c.parentElement.remove();
       }
     });
+    styleSection.appendChild(newControls);
   });
 
   // Load: remake bingo card according to specified file
@@ -522,7 +518,22 @@ function setUpBingoCardControls(card) {
   renderCard(card, grid, defaultCard);
 }
 // Set up controls when app starts
-document.querySelectorAll(".card").forEach((element) => {
-  setUpBingoCardControls(element);
+document.querySelectorAll(".card").forEach((e) => {
+  setUpBingoCardControls(e);
+});
+
+
+// Page styling
+document.querySelectorAll(".collapsible").forEach((e) => {
+  e.addEventListener("click", (ev) => {
+    const e = ev.currentTarget;
+    e.classList.toggle("active");
+    const content = e.nextElementSibling;
+    if (content.style.display === "none") {
+      content.style.display = "block";
+    } else {
+      content.style.display = "none";
+    }
+  });
 });
 

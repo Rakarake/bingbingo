@@ -22,3 +22,8 @@
   text-align: center;
 }
 
+.style-section-heading {
+  cursor: pointer;
+  width: 100%;
+}
+
