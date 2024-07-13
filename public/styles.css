@@ -7,6 +7,14 @@
 }
 
 /* General page styling */
+body {
+  font-family: sans-serif;
+  font-size: 12pt;
+}
+button {
+  font-size: 12pt;
+}
+
 .card {
   display: flex;
   flex-wrap: wrap;
