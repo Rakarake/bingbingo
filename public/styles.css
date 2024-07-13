@@ -16,8 +16,57 @@
   margin: 20px; /* Optional: Add some spacing between elements */
 }
 
-.style-section-heading {
+.collapsible {
   cursor: pointer;
+  padding: 8px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  background-color: #FACC78;
+  border-radius: 10px;
+}
+
+.controls-section-container {
+  background-color: #FFF6E0;
+  padding: 3px;
+  border-radius: 10px;
+}
+
+.style-section {
+  /* Required for animation */
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.2s ease-out;
+  background-color: #FFF6E0;
+  border-radius: 0px 0px 10px 10px;
+  margin-bottom: 10px;
+}
+
+.collapsible:after {
+  content: '\02795';
+  float: right;
+}
+
+.active {
+  border-radius: 10px 10px 0px 0px;
+}
+
+.active:after {
+  content: "\2796";
+}
+
+a {
+  color: #C64600;
+}
+
+label {
+  display: block;
+  margin: 10px;
+}
+
+.control {
+  display: block;
+  margin: 3px;
 }
 
 /* Mobile */

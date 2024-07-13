@@ -529,11 +529,16 @@ document.querySelectorAll(".collapsible").forEach((e) => {
     const e = ev.currentTarget;
     e.classList.toggle("active");
     const content = e.nextElementSibling;
-    if (content.style.display === "none") {
-      content.style.display = "block";
+    //if (content.style.display === "none") {
+    //  content.style.display = "block";
+    //} else {
+    //  content.style.display = "none";
+    //}
+    if (content.style.maxHeight){
+      content.style.maxHeight = null;
     } else {
-      content.style.display = "none";
-    }
+      content.style.maxHeight = content.scrollHeight + "px";
+    } 
   });
 });
 

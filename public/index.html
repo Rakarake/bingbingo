@@ -16,17 +16,14 @@
       </div>
       <div class="card">
         <table class="grid"></table>
-        <div>
-        <button class="collapsible style-section-heading">Controls</button>
-          <div>
-            <label>Load board:
-            <input class="load" type="file"></label>
-            <br>
-            <label>Save board:
-            <a class="save">Download</a></label>
-            <br>
-            <label>Number of items wide:
-            <select class="size">
+        <div class="controls">
+          <div class="controls-section-container">
+            <label>Load board
+            <input class="load control" type="file"></label>
+            <label>Save board
+            <a class="save control">Download</a></label>
+            <label>Number of items wide
+            <select class="size control">
               <option value="3">3x3</option>
               <option value="4">4x4</option>
               <option value="5">5x5</option>
@@ -34,30 +31,29 @@
               <option value="7">7x7</option>
               <option value="8">8x8</option>
             </select></label>
-            <br>
-            <h2>Styling</h2>
-            <div class="style-section-container"></div>
-            <button class="collapsible style-section-heading">Other</button>
-            <div class="style-section">
-              <label>Tolerance <input type="number" class="tolerance"></label>
-            </div>
+          </div>
+          <h2>Styling</h2>
+          <div class="style-section-container"></div>
+          <button class="collapsible style-section-heading">Other</button>
+          <div class="style-section">
+            <label>Tolerance <input type="number" class="tolerance control"></label>
           </div>
         </div>
       </div>
       <template class="style-section-template">
-        <br><button class="collapsible style-section-heading">Collapse</button>
+        <button class="collapsible style-section-heading">Collapse</button>
         <div class="style-section">
-          <label>Size <input type="number" class="style pixelSize"><br></label>
-          <label>Padding <input type="number" class="style padding"><br></label>
-          <label>Background color <input type="color" class="style backgroundColor"><br></label>
-          <label>Background image <input type="file" accept="image/*" class="style backgroundImage"><br></label>
-          <label>Font size <input type="number" class="style fontSize"><br></label>
-          <label>Spacing <input type="number" class="style borderSpacing"><br></label>
-          <label>Border color <input type="color" class="style borderColor"><br></label>
-          <label>Border width <input type="number" class="style borderWidth"><br></label>
-          <label>Border radius <input type="number" class="style borderRadius"><br></label>
+          <label>Size <input type="number" class="style pixelSize control"></label>
+          <label>Padding <input type="number" class="style padding control"></label>
+          <label>Background color <input type="color" class="style backgroundColor control"></label>
+          <label>Background image <input type="file" accept="image/*" class="style backgroundImage control"></label>
+          <label>Font size <input type="number" class="style fontSize control"></label>
+          <label>Spacing <input type="number" class="style borderSpacing control"></label>
+          <label>Border color <input type="color" class="style borderColor control"></label>
+          <label>Border width <input type="number" class="style borderWidth control"></label>
+          <label>Border radius <input type="number" class="style borderRadius control"></label>
           <label>Border style
-            <select class="style borderStyle">
+            <select class="style borderStyle control">
               <option value="solid">solid</option>
               <option value="none">none</option>
               <option value="dotted">dotted</option>
