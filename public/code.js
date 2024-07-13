@@ -59,8 +59,8 @@ const defaultCard =
         "item": {
             "padding": "3",
             "fontSize": "18",
-            "backgroundColor": "#f9f06b",
-            "backgroundImage": "",
+            "backgroundColor": "white",
+            "backgroundImage": { url: "" },
             "borderStyle": "solid",
             "borderColor": "#b5835a",
             "borderRadius": "5"
@@ -68,8 +68,8 @@ const defaultCard =
         "crossed": {
             "padding": "3",
             "fontSize": "18",
-            "backgroundColor": "#ffffff",
-            "backgroundImage": "",
+            "backgroundColor": "white",
+            "backgroundImage": { url: "cross.svg" },
             "borderStyle": "solid",
             "borderColor": "#b5835a",
             "borderRadius": "5"
@@ -197,7 +197,7 @@ function cFromStateStylePixel(card, name, c) {
 function cFromStateStyleImage(card, name, c) {
   const state = getState(card);
   const sName = getStylableName(card, c);
-  if (state.style[sName][name] != "") {
+  if (state.style[sName][name].hash != undefined) {
     const hash = state.style[sName][name].hash;
     const fileUrl = cachedFiles.get(hash);
     if (fileUrl == undefined) {
@@ -208,7 +208,7 @@ function cFromStateStyleImage(card, name, c) {
     });
   } else {
     forEachStylable(card, c, (s) => {
-      s.style[name] = "";
+      s.style[name] = "url('" + state.style[sName][name].url + "')";
     });
   }
 }
@@ -538,7 +538,7 @@ document.querySelectorAll(".collapsible").forEach((e) => {
       content.style.maxHeight = null;
     } else {
       content.style.maxHeight = content.scrollHeight + "px";
-    } 
+    }
   });
 });
 
