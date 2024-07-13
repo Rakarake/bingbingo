@@ -40,6 +40,14 @@ button {
   border-radius: 10px;
 }
 
+input,select,.save {
+  border-radius: 5px;
+  border-style: solid;
+  border-color: #FACC78;
+  background-color: white;
+  padding: 5px;
+}
+
 .style-section {
   /* Required for animation */
   max-height: 0;
@@ -51,7 +59,7 @@ button {
 }
 
 .collapsible:after {
-  content: '\02795';
+  content: '+';
   float: right;
 }
 
@@ -60,11 +68,15 @@ button {
 }
 
 .active:after {
-  content: "\2796";
+  content: "-";
 }
 
 a {
   color: #C64600;
+}
+
+h2 {
+  font-size: 15pt;
 }
 
 label {
