@@ -10,6 +10,10 @@
 body {
   font-family: sans-serif;
   font-size: 12pt;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 button {
   font-size: 12pt;
@@ -89,20 +93,7 @@ label {
   margin: 3px;
 }
 
-/* Mobile */
 .resp-margin {
-    margin-left: 2%;
-}
-/* Tablet */
-@media (min-width:600px) {
-    .resp-margin {
-        margin-left: 10%;
-    }
-}
-/* Desktop */
-@media (min-width:900px) {
-    .resp-margin {
-        margin-left: 15%;
-    }
+  max-width: 700px;
 }
 
