@@ -1,0 +1,11 @@
+[package]
+name = "bingbingo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = "*"
+tokio = { version = "1.38.1", features = ["full"] }
+tower-http = { version = "*", features = ["fs"] }
+serde = "*"
+
