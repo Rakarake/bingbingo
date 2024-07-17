@@ -328,6 +328,9 @@ function updateSaveBingoCardLink (card, state) {
   const blob = new Blob([jsonString], { type: 'application/json' });
   saveElement.href = URL.createObjectURL(blob);
   saveElement.download = 'bingo-card.json';  // Filename of download
+
+  // Save session
+  sessionStorage["state"] = jsonString;
 }
 
 // Bingo element to use when generating new bingo cards
@@ -462,9 +465,11 @@ function tileSetup(card, grid, element, state) {
 function setUpBingoCardControls(card) {
   const grid = card.querySelector(".grid");
 
-  // Create empty bingo card
-  setState(card, defaultCard);
-  renderCard(card, grid, defaultCard);
+  // Create empty bingo card, use session storage if set
+  const initialState = sessionStorage["state"] != undefined ?
+    JSON.parse(sessionStorage["state"]) : defaultCard;
+  setState(card, initialState);
+  renderCard(card, grid, initialState);
 
   // Instantiate controls
   const styleSection = card.querySelector(".style-section-container");
@@ -515,7 +520,7 @@ function setUpBingoCardControls(card) {
     });
   });
 
-  renderCard(card, grid, defaultCard);
+  renderCard(card, grid, initialState);
 }
 // Set up controls when app starts
 document.querySelectorAll(".card").forEach((e) => {
