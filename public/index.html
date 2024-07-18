@@ -18,11 +18,11 @@
         <table class="grid"></table>
         <div class="controls">
           <div class="controls-section-container">
-            <label>Load board
+            <label class="control-container">Load board
             <input class="load control" type="file"></label>
-            <label>Save board
+            <label class="control-container">Save board
             <a class="save control">Download</a></label>
-            <label>Number of items wide
+            <label class="control-container">Number of items wide
             <select class="size control">
               <option value="3">3x3</option>
               <option value="4">4x4</option>
@@ -31,28 +31,29 @@
               <option value="7">7x7</option>
               <option value="8">8x8</option>
             </select></label>
+            <button class="reset control-container">Reset Card</button>
           </div>
           <h2>Styling</h2>
           <div class="style-section-container"></div>
           <button class="collapsible style-section-heading">other</button>
           <div class="style-section">
-            <label>Tolerance <input type="number" class="tolerance control"></label>
+            <label class="control-container">Tolerance <input type="number" class="tolerance control"></label>
           </div>
         </div>
       </div>
       <template class="style-section-template">
         <button class="collapsible style-section-heading">Collapse</button>
         <div class="style-section">
-          <label>Size <input type="number" class="style pixelSize control"></label>
-          <label>Padding <input type="number" class="style padding control"></label>
-          <label>Background color <input type="color" class="style backgroundColor control"></label>
-          <label>Background image <input type="file" accept="image/*" class="style backgroundImage control"></label>
-          <label>Font size <input type="number" class="style fontSize control"></label>
-          <label>Spacing <input type="number" class="style borderSpacing control"></label>
-          <label>Border color <input type="color" class="style borderColor control"></label>
-          <label>Border width <input type="number" class="style borderWidth control"></label>
-          <label>Border radius <input type="number" class="style borderRadius control"></label>
-          <label>Border style
+          <label class="control-container">Size <input type="number" class="style pixelSize control"></label>
+          <label class="control-container">Padding <input type="number" class="style padding control"></label>
+          <label class="control-container">Background color <input type="color" class="style backgroundColor control"></label>
+          <label class="control-container">Background image <input type="file" accept="image/*" class="style backgroundImage control"></label>
+          <label class="control-container">Font size <input type="number" class="style fontSize control"></label>
+          <label class="control-container">Spacing <input type="number" class="style borderSpacing control"></label>
+          <label class="control-container">Border color <input type="color" class="style borderColor control"></label>
+          <label class="control-container">Border width <input type="number" class="style borderWidth control"></label>
+          <label class="control-container">Border radius <input type="number" class="style borderRadius control"></label>
+          <label class="control-container">Border style
             <select class="style borderStyle control">
               <option value="solid">solid</option>
               <option value="none">none</option>
@@ -68,10 +69,15 @@
       </template>
       <br>
       <footer class="resp-margin">
+        <p>
         bingbingo 🗿 is MDF copyright and free software!
         <a href="COPYING">Lisence</a>
         <a href="https://github.com/Rakarake/bingbingo">Source</a>
-        <br><i>"I'd shower you in coconut cream pies 😉"</i>
+        </p>
+        <div class="cookie-notice">
+        This site uses cokies 🍪 to store your bingo card, nuff said.
+        </div>
+        <p><i>"I'd shower you in coconut cream pies 😉"</i></p>
       </footer>
     </body>
 </html>

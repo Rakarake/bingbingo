@@ -83,9 +83,22 @@ h2 {
   font-size: 15pt;
 }
 
-label {
+.control-container {
   display: block;
   margin: 10px;
+}
+
+.reset {
+  background-color: #ffbebc;
+  border-style: none;
+  border-radius: 5px;
+  padding: 5px;
+}
+.reset:hover {
+  background-color: #ffb1ac;
+}
+.reset:active {
+  background-color: #ff968f;
 }
 
 .control {
@@ -95,5 +108,15 @@ label {
 
 .resp-margin {
   max-width: 700px;
+}
+
+footer p {
+  margin: 5px;
+}
+
+.cookie-notice {
+  background-color: #ffbebc;
+  border-radius: 5px;
+  padding: 4px;
 }
 

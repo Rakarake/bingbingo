@@ -121,6 +121,7 @@ const controls = [
   // Controls
   ["size",      cFromState, cToStateSize],
   ["tolerance", cFromState, cToState],
+  ["reset", (card, name, c) => {}, cToStateReset],
 ];
 
 // Helper
@@ -151,7 +152,7 @@ function cFromState(card, name, c) {
 async function cToState(card, name, c) {
   const state = getState(card);
   state[name] = c.value;
-  renderCard(card, card.querySelector(".grid"), state);
+  renderCard(card, state);
 }
 
 async function cToStateSize(card, name, c) {
@@ -166,6 +167,11 @@ async function cToStateSize(card, name, c) {
     state.items = state.items.concat(additionalItems);
   }
   state[name] = size;
+}
+
+async function cToStateReset(card, name, c) {
+  setState(card, structuredClone(defaultCard));
+  renderCard(card, defaultCard);
 }
 
 function cFromStateStyle(card, name, c) {
@@ -345,12 +351,13 @@ emptyBingoTileText.setAttribute("contenteditable", "true");
 emptyBingoTile.append(emptyBingoTileText);
 
 // Create a bingo card from state
-function renderCard (card, grid, state) {
+function renderCard (card, state) {
+  const grid = card.querySelector(".grid");
   // Add new / remove unwanted elements
   const addChild = (parent) => {
     const newNode = emptyBingoTile.cloneNode(true);
     parent.appendChild(newNode);
-    tileSetup(card, grid, newNode, state);
+    tileSetup(card, grid, newNode);
   }
   const currentSize = grid.children.length;
   const newSize = state.size;
@@ -436,7 +443,7 @@ function getItemIndex(card, item) {
 }
 
 // Set up event listeners for a tile
-function tileSetup(card, grid, element, state) {
+function tileSetup(card, grid, element) {
   // Crossing
   element.addEventListener("contextmenu", (event) => {
     const index = getItemIndex(card, element);
@@ -448,8 +455,8 @@ function tileSetup(card, grid, element, state) {
       console.log('cross');
       setItemState(card, index, "crossed", "true");
     }
-    renderCard(card, grid, getState(card));
-    updateSaveBingoCardLink(card, state);
+    renderCard(card, getState(card));
+    updateSaveBingoCardLink(card, getState(card));
   });
   // Update save link on change
   textElement = element.querySelector(".bingo-text");
@@ -459,7 +466,7 @@ function tileSetup(card, grid, element, state) {
     // Update the state
     setItemState(card, index, "text", e.currentTarget.innerText);
     fitText(getState(card), element);
-    updateSaveBingoCardLink(card, state);
+    updateSaveBingoCardLink(card, getState(card));
   });
 }
 
@@ -471,7 +478,7 @@ function setUpBingoCardControls(card) {
   const initialState = sessionStorage["state"] != undefined ?
     JSON.parse(sessionStorage["state"]) : defaultCard;
   setState(card, initialState);
-  renderCard(card, grid, initialState);
+  renderCard(card, initialState);
 
   // Instantiate controls
   const styleSection = card.querySelector(".style-section-container");
@@ -498,7 +505,7 @@ function setUpBingoCardControls(card) {
       loadElement.files[0].text().then((v) => {
         const state = JSON.parse(v);
         setState(card, state);
-        renderCard(card, grid, state);
+        renderCard(card, state);
       });
     }
   });
@@ -509,20 +516,26 @@ function setUpBingoCardControls(card) {
   controls.forEach(([name, fromState, toState]) => {
     const cs = card.querySelectorAll("." + name);
     cs.forEach((c) => {
-      c.addEventListener("change", () => {
-        // Set state
-        toState(card, name, c).then(() => {
-          const state = getState(card);
-          // Affect the DOM
-          fromState(card, name, c);
-          renderCard(card, grid, state);
-          updateSaveBingoCardLink(card, state);
+      if (c.nodeName == "BUTTON") {
+        c.addEventListener("click", () => {
+          toState(card, name, c);
         });
-      });
+      } else {
+        c.addEventListener("change", () => {
+          // Set state
+          toState(card, name, c).then(() => {
+            const state = getState(card);
+            // Affect the DOM
+            fromState(card, name, c);
+            renderCard(card, state);
+            updateSaveBingoCardLink(card, state);
+          });
+        });
+      }
     });
   });
 
-  renderCard(card, grid, initialState);
+  renderCard(card, initialState);
 }
 // Set up controls when app starts
 document.querySelectorAll(".card").forEach((e) => {
