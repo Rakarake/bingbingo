@@ -199,9 +199,11 @@ function cFromStateStyleImage(card, name, c) {
   const sName = getStylableName(card, c);
   if (state.style[sName][name].hash != undefined) {
     const hash = state.style[sName][name].hash;
-    const fileUrl = cachedFiles.get(hash);
+    let fileUrl = cachedFiles.get(hash);
     if (fileUrl == undefined) {
-      cachedFiles.set(hash, state.style[sName][name].url);
+      const inMemoryFile = dataURLtoFile(state.style[sName][name].url, "image.png");
+      fileUrl = URL.createObjectURL(inMemoryFile);
+      cachedFiles.set(hash, fileUrl);
     }
     forEachStylable(card, c, (s) => {
       s.style[name] = "url('" + fileUrl + "')";
