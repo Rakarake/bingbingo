@@ -59,7 +59,7 @@ const defaultCard =
         "item": {
             "padding": "3",
             "fontSize": "18",
-            "backgroundColor": "white",
+            "backgroundColor": "#ffffff",
             "backgroundImage": { url: "" },
             "borderStyle": "solid",
             "borderColor": "#b5835a",
@@ -68,7 +68,7 @@ const defaultCard =
         "crossed": {
             "padding": "3",
             "fontSize": "18",
-            "backgroundColor": "white",
+            "backgroundColor": "#ffffff",
             "backgroundImage": { url: "cross.svg" },
             "borderStyle": "solid",
             "borderColor": "#b5835a",
