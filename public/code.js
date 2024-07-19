@@ -177,7 +177,7 @@ async function cToStateLoad(card, name, c) {
     const text = await c.files[0].text();
     const state = JSON.parse(text);
     setState(card, state);
-    renderCard(card, state);
+    render(card, state);
   }
 }
 async function cToStateSize(card, name, c) {
@@ -191,12 +191,12 @@ async function cToStateSize(card, name, c) {
     }
     state.items = state.items.concat(additionalItems);
   }
-  renderCard(card, state);
+  render(card, state);
 }
 async function cToStateReset(card, name, c) {
   setState(card, structuredClone(defaultCard));
   save(card);
-  renderCard(card, defaultCard);
+  render(card, defaultCard);
 }
 
 
@@ -321,7 +321,8 @@ emptyBingoTileText.setAttribute("contenteditable", "true");
 emptyBingoTile.append(emptyBingoTileText);
 
 // Create a bingo card from state
-function renderCard (card, state) {
+function render(card) {
+  const state = getState(card);
   const grid = card.querySelector(".grid");
   // Add new / remove unwanted elements
   const addChild = (parent) => {
@@ -441,7 +442,7 @@ function tileSetup(card, grid, element) {
       setItemState(card, index, "crossed", "true");
     }
     // TODO: fix so we don't need to re-render
-    renderCard(card, getState(card));
+    render(card, getState(card));
     save(card);
   });
   // Update save link on change
@@ -512,7 +513,7 @@ function setUpBingoCardControls(card) {
     });
   });
 
-  renderCard(card, initialState);
+  render(card, initialState);
   save(card);
 }
 // Set up controls when app starts
