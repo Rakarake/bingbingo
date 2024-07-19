@@ -159,6 +159,7 @@ const controls = [
   ["size",      cToDOM, cToControl, cToStateSize],
   ["tolerance", cToDOM, cToControl, cToState],
   ["reset",     cToDOM, (a, b, c) => {}, cToStateReset],
+  ["load",      cToDOM, (a, b, c) => {}, cToStateLoad]
 ];
 
 async function cToState(card, name, c) {
@@ -171,6 +172,14 @@ function cToControl(card, name, c) {
   c.value = getState(card)[name];
 }
 
+async function cToStateLoad(card, name, c) {
+  if (c.files.length >= 1) {
+    const text = await c.files[0].text();
+    const state = JSON.parse(text);
+    setState(card, state);
+    renderCard(card, state);
+  }
+}
 async function cToStateSize(card, name, c) {
   const state = getState(card);
   const size = c.value;
@@ -483,20 +492,6 @@ function setUpBingoCardControls(card) {
     });
     styleSection.appendChild(newControls);
   });
-
-  // Load: remake bingo card according to specified file
-  const loadElement = card.querySelector(".load");
-  loadElement.addEventListener("change", () => {
-    if (loadElement.files.length >= 1) {
-      loadElement.files[0].text().then((v) => {
-        const state = JSON.parse(v);
-        setState(card, state);
-        renderCard(card, state);
-      });
-    }
-  });
-  // clear previous selections
-  loadElement.value = "";
 
   // Hook up controls
   controls.forEach(([name, toDOM, toControl, toState]) => {
