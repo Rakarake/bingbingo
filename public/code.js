@@ -339,8 +339,6 @@ function save(card) {
   const saveElement = card.querySelector(".save");
   saveElement.href = URL.createObjectURL(blob);
   saveElement.download = 'bingo-card.json';  // Filename of download
-  // Save session
-  sessionStorage["state"] = jsonString;
 }
 
 // Bingo element to use when generating new bingo cards
@@ -497,8 +495,7 @@ function setUpBingoCardControls(card) {
   const grid = card.querySelector(".grid");
 
   // Create empty bingo card, use session storage if set
-  const initialState = sessionStorage["state"] != undefined ?
-    JSON.parse(sessionStorage["state"]) : structuredClone(defaultCard);
+  const initialState = structuredClone(defaultCard);
   setState(card, initialState);
 
   // Instantiate controls
