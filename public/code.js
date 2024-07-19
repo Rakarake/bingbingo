@@ -59,7 +59,7 @@ const defaultCard =
         "item": {
             "padding": "3",
             "fontSize": "18",
-            //"fontFamily": { isData: false, url: "sans-serif" },
+            "fontFamily": { isData: false, url: "sans-serif" },
             "backgroundColor": "#ffffff",
             "backgroundImage": { isData: false, url: "" },
             "borderStyle": "solid",
@@ -69,7 +69,7 @@ const defaultCard =
         "crossed": {
             "padding": "3",
             "fontSize": "18",
-            //"fontFamily": { isData: false, url: "sans-serif" },
+            "fontFamily": { isData: false, url: "sans-serif" },
             "backgroundColor": "#ffffff",
             "backgroundImage": { isData: false, url: "cross.svg" },
             "borderStyle": "solid",
@@ -104,7 +104,7 @@ const styleControls = {
   "backgroundColor": [cToDOMStyle,      cToControlStyle,      cToStateStyle]    ,
   "backgroundImage": [cToDOMStyleFile,  cToControlStyleFile,  cToStateStyleFile],
   "fontSize":        [cToDOMStylePixel, cToControlStyle,      cToStateStyle]    ,
-  //"fontFamily",      [cToDOMStyleFont,  cToControlStyleFile,  cToStateStyleFile],
+  "fontFamily":      [cToDOMStyleFont,  cToControlStyleFile,  cToStateStyleFile],
   "borderSpacing":   [cToDOMStylePixel, cToControlStyle,      cToStateStyle]    ,
   "borderStyle":     [cToDOMStyle,      cToControlStyle,      cToStateStyle]    ,
   "borderColor":     [cToDOMStyle,      cToControlStyle,      cToStateStyle]    ,
@@ -163,16 +163,17 @@ async function cToDOMStyleFont(card, name, sName, e) {
       cachedFiles.set(hash, fileUrl);
 
       //TODO: add font!
-      let custom_font = new FontFace(hash,
-        "url(fonts/" + fileUrl  + ")");
+      console.log(fileUrl);
+      let custom_font = new FontFace("Big Font",
+        "url('" + fileUrl  + "')");
       const loaded_font = await custom_font.load();
       document.fonts.add(loaded_font);
     }
-    e.style[name] = hash;
+    e.style[name] = "Big Font";
   }
   else {
     // Not actually a url
-    e.style[name] = url;
+    e.style[name] = sObject.url;
   }
 }
 function cToControlStyleFile(card, name, sName, c) {
