@@ -185,6 +185,7 @@ async function cToStateSize(card, name, c) {
 }
 async function cToStateReset(card, name, c) {
   setState(card, structuredClone(defaultCard));
+  save(card);
   renderCard(card, defaultCard);
 }
 
@@ -429,6 +430,7 @@ function tileSetup(card, grid, element) {
       console.log('cross');
       setItemState(card, index, "crossed", "true");
     }
+    // TODO: fix so we don't need to re-render
     renderCard(card, getState(card));
     save(card);
   });
@@ -452,7 +454,6 @@ function setUpBingoCardControls(card) {
   const initialState = sessionStorage["state"] != undefined ?
     JSON.parse(sessionStorage["state"]) : defaultCard;
   setState(card, initialState);
-  renderCard(card, initialState);
 
   // Instantiate controls
   const styleSection = card.querySelector(".style-section-container");
