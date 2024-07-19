@@ -182,6 +182,7 @@ async function cToStateSize(card, name, c) {
     }
     state.items = state.items.concat(additionalItems);
   }
+  renderCard(card, state);
 }
 async function cToStateReset(card, name, c) {
   setState(card, structuredClone(defaultCard));
