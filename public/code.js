@@ -59,6 +59,7 @@ const defaultCard =
         "item": {
             "padding": "3",
             "fontSize": "18",
+            //"fontFamily": { isData: false, url: "sans-serif" },
             "backgroundColor": "#ffffff",
             "backgroundImage": { isData: false, url: "" },
             "borderStyle": "solid",
@@ -68,6 +69,7 @@ const defaultCard =
         "crossed": {
             "padding": "3",
             "fontSize": "18",
+            //"fontFamily": { isData: false, url: "sans-serif" },
             "backgroundColor": "#ffffff",
             "backgroundImage": { isData: false, url: "cross.svg" },
             "borderStyle": "solid",
@@ -83,11 +85,11 @@ for (let i = 0; i < defaultCard.items.length; i++) {
 }
 
 // The names of the stylable elements
-const stylables = [
-  ["grid",    c => c.querySelectorAll(".grid")] ,
-  ["item",    c => c.querySelectorAll(".bingo-item:not(.crossed)")],
-  ["crossed", c => c.querySelectorAll(".crossed")]
-];
+const stylables = {
+  "grid":    c => c.querySelectorAll(".grid"),
+  "item":    c => c.querySelectorAll(".bingo-item:not(.crossed)"),
+  "crossed": c => c.querySelectorAll(".crossed"),
+};
 
 
 // IDEA: state -> DOM, state -> control, control -> state
@@ -97,19 +99,19 @@ const stylables = [
 // and a function taking state applying it to the controls
 // a value to the given stylable element
 // v: value, e: element
-const styleControls = [
-  ["pixelSize",       cToDOMStyleSize,  cToControlStyle,      cToStateStyle],
-  ["backgroundColor", cToDOMStyle,      cToControlStyle,      cToStateStyle],
-  ["backgroundImage", cToDOMStyleImage, cToControlStyleImage, cToStateStyleImage],
-  ["fontSize",        cToDOMStylePixel, cToControlStyle,      cToStateStyle],
-  ["borderSpacing",   cToDOMStylePixel, cToControlStyle,      cToStateStyle],
-  ["borderStyle",     cToDOMStyle,      cToControlStyle,      cToStateStyle],
-  ["borderColor",     cToDOMStyle,      cToControlStyle,      cToStateStyle],
-  ["padding",         cToDOMStylePixel, cToControlStyle,      cToStateStyle],
-  ["borderWidth",     cToDOMStylePixel, cToControlStyle,      cToStateStyle],
-  ["borderRadius",    cToDOMStylePixel, cToControlStyle,      cToStateStyle],
-
-];
+const styleControls = {
+  "pixelSize":       [cToDOMStyleSize,  cToControlStyle,      cToStateStyle]    ,
+  "backgroundColor": [cToDOMStyle,      cToControlStyle,      cToStateStyle]    ,
+  "backgroundImage": [cToDOMStyleFile,  cToControlStyleFile,  cToStateStyleFile],
+  "fontSize":        [cToDOMStylePixel, cToControlStyle,      cToStateStyle]    ,
+  //"fontFamily",      [cToDOMStyleFont,  cToControlStyleFile,  cToStateStyleFile],
+  "borderSpacing":   [cToDOMStylePixel, cToControlStyle,      cToStateStyle]    ,
+  "borderStyle":     [cToDOMStyle,      cToControlStyle,      cToStateStyle]    ,
+  "borderColor":     [cToDOMStyle,      cToControlStyle,      cToStateStyle]    ,
+  "padding":         [cToDOMStylePixel, cToControlStyle,      cToStateStyle]    ,
+  "borderWidth":     [cToDOMStylePixel, cToControlStyle,      cToStateStyle]    ,
+  "borderRadius":    [cToDOMStylePixel, cToControlStyle,      cToStateStyle]    ,
+};
 
 async function cToStateStyle(card, name, sName, c) {
   getState(card).style[sName][name] = c.value;
@@ -128,16 +130,16 @@ function cToDOMStyleSize(card, name, sName, e) {
   e.style.height = getState(card).style[sName][name] + "px";
 }
 // Images
-function cToDOMStyleImage(card, name, sName, e) {
+function cToDOMStyleFile(card, name, sName, e) {
   const state = getState(card);
   const sObject = state.style[sName][name];
   if (sObject.isData) {
-    // Cache the image if it is not already
+    // Cache the file if it is not already
     let hash = sObject.hash;
     let fileUrl = cachedFiles.get(hash);
     if (fileUrl == undefined) {
       hash = cyrb53(sObject.url);
-      const inMemoryFile = dataURLtoFile(sObject.url, "image.png");
+      const inMemoryFile = dataURLtoFile(sObject.url, "bigfile");
       fileUrl = URL.createObjectURL(inMemoryFile);
       cachedFiles.set(hash, fileUrl);
     }
@@ -147,21 +149,47 @@ function cToDOMStyleImage(card, name, sName, e) {
     e.style[name] = "url('" + sObject.url + "')";
   }
 }
-function cToControlStyleImage(card, name, sName, c) {
+async function cToDOMStyleFont(card, name, sName, e) {
+  const state = getState(card);
+  const sObject = state.style[sName][name];
+  if (sObject.isData) {
+    // Cache the file if it is not already
+    let hash = sObject.hash;
+    let fileUrl = cachedFiles.get(hash);
+    if (fileUrl == undefined) {
+      hash = cyrb53(sObject.url);
+      const inMemoryFile = dataURLtoFile(sObject.url, "bigfile");
+      fileUrl = URL.createObjectURL(inMemoryFile);
+      cachedFiles.set(hash, fileUrl);
+
+      //TODO: add font!
+      let custom_font = new FontFace(hash,
+        "url(fonts/" + fileUrl  + ")");
+      const loaded_font = await custom_font.load();
+      document.fonts.add(loaded_font);
+    }
+    e.style[name] = hash;
+  }
+  else {
+    // Not actually a url
+    e.style[name] = url;
+  }
 }
-async function cToStateStyleImage(card, name, sName, c) {
+function cToControlStyleFile(card, name, sName, c) {
+}
+async function cToStateStyleFile(card, name, sName, c) {
   const [file] = c.files;
   const url = await bytesToBase64DataUrl(file);
   getState(card).style[sName][name] = { hash: "", isData: true, url: url };
 }
 
 
-const controls = [
-  ["size",      cToDOM, cToControl, cToStateSize],
-  ["tolerance", cToDOM, cToControl, cToState],
-  ["reset",     cToDOM, (a, b, c) => {}, cToStateReset],
-  ["load",      cToDOM, (a, b, c) => {}, cToStateLoad]
-];
+const controls = {
+  "size":      [ cToDOM, cToControl,      cToStateSize ],
+  "tolerance": [ cToDOM, cToControl,      cToState     ],
+  "reset":     [ cToDOM, (a, b, c) => {}, cToStateReset],
+  "load":      [ cToDOM, (a, b, c) => {}, cToStateLoad ],
+};
 
 async function cToState(card, name, c) {
   getState(card)[name] = c.value;
@@ -385,26 +413,29 @@ function render(card) {
 
   // Reflect state to DOM and controls
   // Styling controls
-  styleControls.forEach(([name, toDOM, toControl, toState, isStyle]) => {
-    stylables.forEach(([sName, f]) => {
-      f(card).forEach((e) => {
-        // To DOM
+  for (let sName in defaultCard.style) {
+    const category = state.style[sName];
+    for (let name in category) {
+      const [toDOM, toControl, toState] = styleControls[name];
+      // To DOM
+      stylables[sName](card).forEach((e) => {
         toDOM(card, name, sName, e);
-        // To Control
-        card.querySelectorAll("." + name + ".style-" + sName).forEach((c) => {
-          toControl(card, name, sName, c);
-        });
       });
-    });
-  });
+      // To Control
+      card.querySelectorAll("." + name + ".style-" + sName).forEach((c) => {
+        toControl(card, name, sName, c);
+      });
+    }
+  }
   // Regular controls
-  controls.forEach(([name, toDOM, toControl, toState, isStyle]) => {
+  for (let name in controls) {
+    const [toDOM, toControl, toState] = controls[name];
     toDOM(card, name);
     // To Control
     card.querySelectorAll("." + name).forEach((c) => {
       toControl(card, name, c);
     });
-  });
+  }
 
   allBingoItems.forEach(bingoItem => {
     // For fitting text, all text needs to be as small as possible
@@ -464,41 +495,37 @@ function setUpBingoCardControls(card) {
 
   // Create empty bingo card, use session storage if set
   const initialState = sessionStorage["state"] != undefined ?
-    JSON.parse(sessionStorage["state"]) : defaultCard;
+    JSON.parse(sessionStorage["state"]) : structuredClone(defaultCard);
   setState(card, initialState);
 
   // Instantiate controls
   const styleSection = card.querySelector(".style-section-container");
   const styleTemplate = document.querySelector(".style-section-template");
-  stylables.forEach(([sName, sF]) => {
+  for (let sName in defaultCard.style) {
     const newControls = styleTemplate.content.cloneNode(true);
     newControls.querySelector(".style-section-heading").innerText = sName;
-    newControls.querySelectorAll(".style").forEach((c) => {
-      const name = c.classList[1];
-      if (defaultCard.style[sName][name] != undefined) {
-        // Which element it styles
-        c.classList.add("style-" + sName);
-        // Set event listener
-        const name = c.classList[1];
-        const [n, toDOM, toControl, toState] = styleControls.find(([n, f1, f2, f3]) => n === name);
-        c.addEventListener("change", () => {
-          toState(card, name, sName, c).then(() => {
-            const [n, f] = stylables.find(([n, f]) => n === sName);
-            f(card).forEach((e) => toDOM(card, name, sName, e));
-            save(card);
-          });
+    for (let name in defaultCard.style[sName]) {
+      const c = newControls.querySelector("." + name);
+      c.classList.add("style-" + sName);
+      // Set event listener
+      const [toDOM, toControl, toState] = styleControls[name];
+      c.addEventListener("change", () => {
+        toState(card, name, sName, c).then(() => {
+          stylables[sName](card).forEach((e) => toDOM(card, name, sName, e));
+          save(card);
         });
-      } else {
-        c.parentElement.remove();
-      }
+      });
+    }
+    newControls.querySelectorAll(".style:not(.style-" + sName + ")").forEach(c => {
+      c.parentElement.remove();
     });
     styleSection.appendChild(newControls);
-  });
+  }
 
   // Hook up controls
-  controls.forEach(([name, toDOM, toControl, toState]) => {
-    const cs = card.querySelectorAll("." + name);
-    cs.forEach((c) => {
+  for (let name in controls) {
+    const [toDOM, toControl, toState] = controls[name];
+    card.querySelectorAll("." + name).forEach((c) => {
       if (c.nodeName == "BUTTON") {
         c.addEventListener("click", () => {
           toState(card, name, c);
@@ -512,7 +539,7 @@ function setUpBingoCardControls(card) {
         });
       }
     });
-  });
+  };
 
   render(card, initialState);
   save(card);
