@@ -133,9 +133,10 @@ function cToDOMStyleImage(card, name, sName, e) {
   const sObject = state.style[sName][name];
   if (sObject.isData) {
     // Cache the image if it is not already
-    const hash = sObject.hash;
+    let hash = sObject.hash;
     let fileUrl = cachedFiles.get(hash);
     if (fileUrl == undefined) {
+      hash = cyrb53(sObject.url);
       const inMemoryFile = dataURLtoFile(sObject.url, "image.png");
       fileUrl = URL.createObjectURL(inMemoryFile);
       cachedFiles.set(hash, fileUrl);
@@ -151,7 +152,7 @@ function cToControlStyleImage(card, name, sName, c) {
 async function cToStateStyleImage(card, name, sName, c) {
   const [file] = c.files;
   const url = await bytesToBase64DataUrl(file);
-  getState(card).style[sName][name] = { isData: true, url: url };
+  getState(card).style[sName][name] = { hash: "", isData: true, url: url };
 }
 
 
