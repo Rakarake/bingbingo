@@ -156,20 +156,22 @@ async function cToDOMStyleFont(card, name, sName, e) {
     // Cache the file if it is not already
     let hash = sObject.hash;
     let fileUrl = cachedFiles.get(hash);
+    const hashLetterString = (hash) => {
+      return Array.from(hash.toString()).reduce((acc, char) => {
+        acc + char.toString(36);
+      }, "");
+    };
     if (fileUrl == undefined) {
       hash = cyrb53(sObject.url);
       const inMemoryFile = dataURLtoFile(sObject.url, "bigfile");
       fileUrl = URL.createObjectURL(inMemoryFile);
       cachedFiles.set(hash, fileUrl);
-
-      //TODO: add font!
-      console.log(fileUrl);
-      let custom_font = new FontFace("Big Font",
+      let custom_font = new FontFace(hashLetterString(hash),
         "url('" + fileUrl  + "')");
       const loaded_font = await custom_font.load();
       document.fonts.add(loaded_font);
     }
-    e.style[name] = "Big Font";
+    e.style[name] = hashLetterString(hash);
   }
   else {
     // Not actually a url
