@@ -470,6 +470,7 @@ function tileSetup(card, grid, element) {
     const index = getItemIndex(card, element);
     const isCrossed = getItemState(card, index, "crossed") === "true";
     setItemState(card, index, "crossed", (!isCrossed).toString());
+    element.classList.toggle("crossed");
 
     // Update styling on that element only
     const sName = !isCrossed ? "crossed" : "item";
@@ -477,7 +478,7 @@ function tileSetup(card, grid, element) {
       const [toDOM, toControl, toState] = styleControls[name];
       toDOM(card, name, sName, element);
     }
-
+    fitText(getState(card), element);
     save(card);
   });
   // Update save link on change
