@@ -528,6 +528,11 @@ function setUpBingoCardControls(card) {
       }
     });
   };
+
+  // Empty selection of file selectors
+  card.querySelectorAll("input[type=file]").forEach((c) => {
+    c.value = "";
+  });
 }
 
 // Set up controls when app starts
