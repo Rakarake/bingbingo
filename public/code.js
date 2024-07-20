@@ -465,17 +465,19 @@ function getItemIndex(card, item) {
 function tileSetup(card, grid, element) {
   // Crossing
   element.addEventListener("contextmenu", (event) => {
-    const index = getItemIndex(card, element);
     event.preventDefault();
-    if (getItemState(card, index, "crossed") == "true") {
-      console.log('uncross');
-      setItemState(card, index, "crossed", "false");
-    } else {
-      console.log('cross');
-      setItemState(card, index, "crossed", "true");
+
+    const index = getItemIndex(card, element);
+    const isCrossed = getItemState(card, index, "crossed") === "true";
+    setItemState(card, index, "crossed", (!isCrossed).toString());
+
+    // Update styling on that element only
+    const sName = !isCrossed ? "crossed" : "item";
+    for (let name in defaultCard.style[sName]) {
+      const [toDOM, toControl, toState] = styleControls[name];
+      toDOM(card, name, sName, element);
     }
-    // TODO: fix so we don't need to re-render
-    render(card, getState(card));
+
     save(card);
   });
   // Update save link on change
