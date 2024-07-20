@@ -498,10 +498,6 @@ function tileSetup(card, grid, element) {
 function setUpBingoCardControls(card) {
   const grid = card.querySelector(".grid");
 
-  // Create empty bingo card, use session storage if set
-  const initialState = structuredClone(defaultCard);
-  setState(card, initialState);
-
   // Instantiate controls
   const styleSection = card.querySelector(".style-section-container");
   const styleTemplate = document.querySelector(".style-section-template");
@@ -542,12 +538,36 @@ function setUpBingoCardControls(card) {
       }
     });
   };
-
-  render(card, initialState);
 }
 // Set up controls when app starts
-document.querySelectorAll(".card").forEach((e) => {
-  setUpBingoCardControls(e);
+document.querySelectorAll(".card").forEach((card, i) => {
+  setUpBingoCardControls(card);
+
+  // Create empty bingo card, use session storage if set
+  const sessionName = "card-" + i;
+  const initialState = sessionStorage[sessionName] != undefined ?
+    structuredClone(JSON.parse(sessionStorage[sessionName])) :
+    structuredClone(defaultCard);
+  setState(card, initialState);
+  render(card, initialState);
+
+  // Continously save card to session storage
+  // Not images and fonts
+  const backgroundSaving = () => {
+    console.log("saving");
+    const state = structuredClone(getState(card));
+    for (sName in defaultCard.style) {
+      for (name in state.style[sName]) {
+        if (state.style[sName][name].isData) {
+          delete state.style[sName][name];
+        }
+      }
+    }
+    const jsonString = JSON.stringify(state, null, 4);
+    sessionStorage[sessionName] = jsonString;
+    setTimeout(backgroundSaving, 3000);
+  };
+  backgroundSaving();
 });
 
 
