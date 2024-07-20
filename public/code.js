@@ -559,7 +559,9 @@ document.querySelectorAll(".card").forEach((card, i) => {
     for (sName in defaultCard.style) {
       for (name in state.style[sName]) {
         if (state.style[sName][name].isData) {
-          delete state.style[sName][name];
+          delete state.style[sName][name].url;
+          delete state.style[sName][name].hash;
+          state.style[sName][name].isData = false;
         }
       }
     }
