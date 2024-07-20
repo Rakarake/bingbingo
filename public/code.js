@@ -38,7 +38,7 @@ const cachedFiles = new Map();
 const defaultItem = { text: "1", crossed: false, };
 
 // The default card indicates which controls should be present for
-// each stylable element
+// each stylable element, and uh, is the default card 🥴
 const defaultCard =
 {
     "size": "4",
@@ -95,10 +95,7 @@ const stylables = {
 // IDEA: state -> DOM, state -> control, control -> state
 // names: toDOM,       toControl,        toState
 
-// All allowed CSS styles in camel casing followed by a function applying
-// and a function taking state applying it to the controls
-// a value to the given stylable element
-// v: value, e: element
+// All allowed CSS styles in camel casing followed by their functionality
 const styleControls = {
   "pixelSize":       [cToDOMStyleSize,  cToControlStyle,      cToStateStyle]    ,
   "backgroundColor": [cToDOMStyle,      cToControlStyle,      cToStateStyle]    ,
@@ -186,7 +183,7 @@ async function cToStateStyleFile(card, name, sName, c) {
   getState(card).style[sName][name] = { hash: "", isData: true, url: url };
 }
 
-
+// Generic controls, similar to styling but simpler
 const controls = {
   "size":      [ cToDOM, cToControl,      cToStateSize ],
   "tolerance": [ cToDOM, cToControl,      cToState     ],
@@ -240,9 +237,6 @@ async function cToStateReset(card, name, c) {
   setState(card, structuredClone(defaultCard));
   render(card, defaultCard);
 }
-
-
-
 
 
 // Public domain hashing function
@@ -338,10 +332,6 @@ function setItemState(card, index, field, value) {
 function getItemState(card, index, field) {
   const state = getState(card);
   return state.items[index][field];
-}
-
-// Update the link that saves your bingo card and session
-function save(card) {
 }
 
 // Bingo element to use when generating new bingo cards
@@ -483,7 +473,7 @@ function tileSetup(card, grid, element) {
     }
     fitText(getState(card), element);
   });
-  // Update save link on change
+  // Changing text
   textElement = element.querySelector(".bingo-text");
   textElement.addEventListener("input", (e) => {
     const element = e.currentTarget.parentElement;
@@ -498,7 +488,7 @@ function tileSetup(card, grid, element) {
 function setUpBingoCardControls(card) {
   const grid = card.querySelector(".grid");
 
-  // Instantiate controls
+  // Instantiate styling controls
   const styleSection = card.querySelector(".style-section-container");
   const styleTemplate = document.querySelector(".style-section-template");
   for (let sName in defaultCard.style) {
@@ -521,7 +511,7 @@ function setUpBingoCardControls(card) {
     styleSection.appendChild(newControls);
   }
 
-  // Hook up controls
+  // Hook up regular controls
   for (let name in controls) {
     const [toDOM, toControl, toState] = controls[name];
     card.querySelectorAll("." + name).forEach((c) => {
@@ -539,6 +529,7 @@ function setUpBingoCardControls(card) {
     });
   };
 }
+
 // Set up controls when app starts
 document.querySelectorAll(".card").forEach((card, i) => {
   setUpBingoCardControls(card);
@@ -579,11 +570,6 @@ document.querySelectorAll(".collapsible").forEach((e) => {
     const e = ev.currentTarget;
     e.classList.toggle("active");
     const content = e.nextElementSibling;
-    //if (content.style.display === "none") {
-    //  content.style.display = "block";
-    //} else {
-    //  content.style.display = "none";
-    //}
     if (content.style.maxHeight){
       content.style.maxHeight = null;
     } else {
