@@ -192,6 +192,7 @@ const controls = {
   "tolerance": [ cToDOM, cToControl,      cToState     ],
   "reset":     [ cToDOM, (a, b, c) => {}, cToStateReset],
   "load":      [ cToDOM, (a, b, c) => {}, cToStateLoad ],
+  "save":      [ cToDOM, (a, b, c) => {}, cToStateSave ],
 };
 
 async function cToState(card, name, c) {
@@ -203,7 +204,17 @@ function cToDOM(card, name) {
 function cToControl(card, name, c) {
   c.value = getState(card)[name];
 }
-
+async function cToStateSave(card, name, c) {
+  const state = getState(card);
+  const jsonString = JSON.stringify(state, null, 4);
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'bingo-card.json';
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+}
 async function cToStateLoad(card, name, c) {
   if (c.files.length >= 1) {
     const text = await c.files[0].text();
@@ -227,7 +238,6 @@ async function cToStateSize(card, name, c) {
 }
 async function cToStateReset(card, name, c) {
   setState(card, structuredClone(defaultCard));
-  save(card);
   render(card, defaultCard);
 }
 
@@ -332,13 +342,6 @@ function getItemState(card, index, field) {
 
 // Update the link that saves your bingo card and session
 function save(card) {
-  const state = getState(card);
-  const jsonString = JSON.stringify(state, null, 4);
-  // Update save link
-  const blob = new Blob([jsonString], { type: 'application/json' });
-  const saveElement = card.querySelector(".save");
-  saveElement.href = URL.createObjectURL(blob);
-  saveElement.download = 'bingo-card.json';  // Filename of download
 }
 
 // Bingo element to use when generating new bingo cards
@@ -479,7 +482,6 @@ function tileSetup(card, grid, element) {
       toDOM(card, name, sName, element);
     }
     fitText(getState(card), element);
-    save(card);
   });
   // Update save link on change
   textElement = element.querySelector(".bingo-text");
@@ -489,7 +491,6 @@ function tileSetup(card, grid, element) {
     // Update the state
     setItemState(card, index, "text", e.currentTarget.innerText);
     fitText(getState(card), element);
-    save(card);
   });
 }
 
@@ -515,7 +516,6 @@ function setUpBingoCardControls(card) {
       c.addEventListener("change", () => {
         toState(card, name, sName, c).then(() => {
           stylables[sName](card).forEach((e) => toDOM(card, name, sName, e));
-          save(card);
         });
       });
     }
@@ -537,7 +537,6 @@ function setUpBingoCardControls(card) {
         c.addEventListener("change", () => {
           toState(card, name, c).then(() => {
             toDOM(card, name);
-            save(card);
           });
         });
       }
@@ -545,7 +544,6 @@ function setUpBingoCardControls(card) {
   };
 
   render(card, initialState);
-  save(card);
 }
 // Set up controls when app starts
 document.querySelectorAll(".card").forEach((e) => {

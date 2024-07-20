@@ -88,17 +88,31 @@ h2 {
   margin: 10px;
 }
 
-.reset {
-  background-color: #ffbebc;
-  border-style: none;
+
+button.control-container {
+  border-style: solid;
+  border-color: white;
   border-radius: 5px;
   padding: 5px;
+}
+
+.reset {
+  background-color: #ffbebc;
 }
 .reset:hover {
   background-color: #ffb1ac;
 }
 .reset:active {
   background-color: #ff968f;
+}
+.save {
+  background-color: #bef8b7;
+}
+.save:hover {
+  background-color: #acf7a3;
+}
+.save:active {
+  background-color: #84e478;
 }
 
 .control {
