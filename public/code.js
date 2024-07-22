@@ -486,53 +486,53 @@ function tileSetup(card, grid, element) {
 
 // Set up all functionality for bingo card controls
 function setUpBingoCardControls(card) {
-  const grid = card.querySelector(".grid");
-
-  // Instantiate styling controls
   const styleSection = card.querySelector(".style-section-container");
   const styleTemplate = document.querySelector(".style-section-template");
-  for (let sName in defaultCard.style) {
-    const newControls = styleTemplate.content.cloneNode(true);
-    newControls.querySelector(".style-section-heading").innerText = sName;
-    for (let name in defaultCard.style[sName]) {
-      const c = newControls.querySelector("." + name);
-      c.classList.add("style-" + sName);
-      // Set event listener
-      const [toDOM, toControl, toState] = styleControls[name];
-      c.addEventListener("change", () => {
-        toState(card, name, sName, c).then(() => {
-          stylables[sName](card).forEach((e) => toDOM(card, name, sName, e));
-        });
-      });
-    }
-    newControls.querySelectorAll(".style:not(.style-" + sName + ")").forEach(c => {
-      c.parentElement.remove();
-    });
-    styleSection.appendChild(newControls);
-  }
-
-  // Hook up regular controls
-  for (let name in controls) {
-    const [toDOM, toControl, toState] = controls[name];
-    card.querySelectorAll("." + name).forEach((c) => {
-      if (c.nodeName == "BUTTON") {
-        c.addEventListener("click", () => {
-          toState(card, name, c);
-        });
-      } else {
+  if (styleSection && styleTemplate) {
+    // Instantiate styling controls
+    for (let sName in defaultCard.style) {
+      const newControls = styleTemplate.content.cloneNode(true);
+      newControls.querySelector(".style-section-heading").innerText = sName;
+      for (let name in defaultCard.style[sName]) {
+        const c = newControls.querySelector("." + name);
+        c.classList.add("style-" + sName);
+        // Set event listener
+        const [toDOM, toControl, toState] = styleControls[name];
         c.addEventListener("change", () => {
-          toState(card, name, c).then(() => {
-            toDOM(card, name);
+          toState(card, name, sName, c).then(() => {
+            stylables[sName](card).forEach((e) => toDOM(card, name, sName, e));
           });
         });
       }
-    });
-  };
+      newControls.querySelectorAll(".style:not(.style-" + sName + ")").forEach(c => {
+        c.parentElement.remove();
+      });
+      styleSection.appendChild(newControls);
+    }
 
-  // Empty selection of file selectors
-  card.querySelectorAll("input[type=file]").forEach((c) => {
-    c.value = "";
-  });
+    // Hook up regular controls
+    for (let name in controls) {
+      const [toDOM, toControl, toState] = controls[name];
+      card.querySelectorAll("." + name).forEach((c) => {
+        if (c.nodeName == "BUTTON") {
+          c.addEventListener("click", () => {
+            toState(card, name, c);
+          });
+        } else {
+          c.addEventListener("change", () => {
+            toState(card, name, c).then(() => {
+              toDOM(card, name);
+            });
+          });
+        }
+      });
+    };
+
+    // Empty selection of file selectors
+    card.querySelectorAll("input[type=file]").forEach((c) => {
+      c.value = "";
+    });
+  }
 }
 
 // Set up controls when app starts
