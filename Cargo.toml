@@ -7,5 +7,5 @@ edition = "2021"
 axum = "*"
 tokio = { version = "1.38.1", features = ["full"] }
 tower-http = { version = "*", features = ["fs"] }
-serde = "*"
+serde = { version = "*", features = ["derive"] }
 
