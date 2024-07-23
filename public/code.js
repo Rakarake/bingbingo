@@ -335,13 +335,16 @@ function getItemState(card, index, field) {
 }
 
 // Bingo element to use when generating new bingo cards
-const emptyBingoTile = document.createElement("td");
-emptyBingoTile.classList.add("bingo-item");
-const emptyBingoTileText = document.createElement("div");
-emptyBingoTileText.innerText = defaultItem.text;
-emptyBingoTileText.classList.add("bingo-text");
-emptyBingoTileText.setAttribute("contenteditable", "true");
-emptyBingoTile.append(emptyBingoTileText);
+function newEmptyTile() {
+  const emptyBingoTile = document.createElement("td");
+  emptyBingoTile.classList.add("bingo-item");
+  const emptyBingoTileText = document.createElement("div");
+  emptyBingoTileText.innerText = defaultItem.text;
+  emptyBingoTileText.classList.add("bingo-text");
+  emptyBingoTileText.setAttribute("contenteditable", "true");
+  emptyBingoTile.append(emptyBingoTileText);
+  return emptyBingoTile;
+}
 
 // Create a bingo card from state
 function render(card) {
@@ -349,7 +352,7 @@ function render(card) {
   const grid = card.querySelector(".grid");
   // Add new / remove unwanted elements
   const addChild = (parent) => {
-    const newNode = emptyBingoTile.cloneNode(true);
+    const newNode = newEmptyTile();
     parent.appendChild(newNode);
     tileSetup(card, grid, newNode);
   }
