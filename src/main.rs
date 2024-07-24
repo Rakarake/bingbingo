@@ -29,8 +29,8 @@ async fn main() {
     let static_file_service = ServeDir::new("public")
         .not_found_service(tower_http::services::ServeFile::new("public/page404.html"));
     let app = Router::new()
-        .route("/api/room", get(get_cards))
-        .route("/api/room/card", post(post_card))
+        .route("/api/room/:password/cards", get(get_cards))
+        .route("/api/card", post(post_card))
         .nest_service("/", static_file_service)
         .with_state(app_state);
 
