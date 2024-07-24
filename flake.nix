@@ -29,7 +29,7 @@
         # This makes sure we can build for WASM
         # Remember to add necessary changes made in defaultPackage to devShell
         devShell = pkgs.mkShell {
-          packages = [ rust ];
+          packages = [ rust pkgs.curl ];
         };
       }
     );
