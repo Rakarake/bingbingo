@@ -55,7 +55,7 @@ document.querySelectorAll(".card").forEach((card, i) => {
     // Send card to server if specified
     const password = document.querySelector(".join-password").value;
     const name = document.querySelector(".join-name").value;
-    const url = window.location.href + "card";
+    const url = window.location.href + "api/card";
     console.log(url);
     if (document.querySelector(".join-confirm").checked && password != "" && name != "") {
       const body = {

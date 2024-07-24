@@ -9,7 +9,5 @@ curl --header "Content-Type: application/json" \
   http://localhost:3000/api/card
 
 # Fetch those cards
-curl \
-  --request GET\
-  http://localhost:3000/api/room/gabagool/cards
+curl http://localhost:3000/api/room/gabagool/cards
 
