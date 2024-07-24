@@ -25,5 +25,45 @@ for the JavaScript code in this page.
 
 console.log("morbius 🤨");
 
+const cardSection = document.querySelector(".card-section");
+const passwordElement = document.querySelector(".password");
+const passwordConfirmElement = document.querySelector(".password-confirm");
 
+// Continously fetch the room
+const backgroundFetching = () => {
+  const url = window.location.href + "cards";
+  if (passwordConfirmElement.checked && passwordElement.value != "") {
+    const body = {
+      password: passwordElement.value,
+    };
+    const response = fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    response.json().then((result) => {
+      // Render all cards, create elements if they do not exist
+      Object.keys(result.cards).forEach((name) => {
+        const state = result.cards[name];
+        let card = cardSection.querySelectorAll(".card").find((card) => card.dataset.name == name);
+        if (card == undefined) {
+          // Create card element
+          card = document.createElement("div");
+          const grid = document.createElement("table");
+          card.classList.add("card");
+          grid.classList.add("grid");
+          card.appendChild(grid);
+          cardSection.appendChild(card);
+        }
+        renderCard(card, state);
+      });
+      setTimeout(backgroundFetching, 3000);
+    });
+  } else {
+    setTimeout(backgroundFetching, 3000);
+  }
+}
+backgroundFetching();
 

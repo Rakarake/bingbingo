@@ -2,6 +2,7 @@
 <html lang="en-US">
   <head>
     <meta charset="utf-8" name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="icon" type="image/png" href='icon.png' />
     <link rel="stylesheet" href="card.css">
     <link rel="stylesheet" href="styles.css">
     <script src="card.js" defer></script>
@@ -15,6 +16,21 @@
         <p>Press TAB to go to the next item, SHIFT-TAB to go to the previous.</p>
         <p>Want to save the bingo card as an image? In Firefox, right click and
         select "Take Screenshot", then select the card and press download.</p>
+        <p>You can publish your bingo card in real time to a room for live results!</p>
+        <label class="control-container">
+          Room
+          <input class="join-password control" type="url" placeholder="password">
+        </label>
+        <label class="control-container">
+          Name
+          <input class="join-name control" type="url">
+        </label>
+        <label class="control-container">
+          Upload your card
+          <input class="join-confirm control" type="checkbox">
+        </label>
+        <p>You can view all the cards published to rooms <a href="host/">here</a>!</p>
+        <p>
       </div>
       <div class="card">
         <table class="grid"></table>
@@ -33,10 +49,6 @@
               <option value="8">8x8</option>
             </select></label>
             <button class="reset control-container">Reset Card</button>
-            <label class="control-container">
-              Join room
-              <input class="join control" type="url" placeholder="password">
-            </label>
           </div>
           <h2>Styling</h2>
           <div class="style-section-container"></div>

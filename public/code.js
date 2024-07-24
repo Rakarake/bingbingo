@@ -40,8 +40,8 @@ document.querySelectorAll(".card").forEach((card, i) => {
   const backgroundSaving = () => {
     console.log("saving");
     const state = structuredClone(getState(card));
-    for (sName in defaultCard.style) {
-      for (name in state.style[sName]) {
+    for (const sName in defaultCard.style) {
+      for (const name in state.style[sName]) {
         if (state.style[sName][name].isData) {
           state.style[sName][name].url = defaultCard.style[sName][name].url;
           delete state.style[sName][name].hash;
@@ -51,6 +51,27 @@ document.querySelectorAll(".card").forEach((card, i) => {
     }
     const jsonString = JSON.stringify(state, null, 4);
     sessionStorage[sessionName] = jsonString;
+
+    // Send card to server if specified
+    const password = document.querySelector(".join-password").value;
+    const name = document.querySelector(".join-name").value;
+    const url = window.location.href + "card";
+    console.log(url);
+    if (document.querySelector(".join-confirm").checked && password != "" && name != "") {
+      const body = {
+        password: password,
+        name: name,
+        card: jsonString,
+      };
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+    }
+
     setTimeout(backgroundSaving, 3000);
   };
   backgroundSaving();
