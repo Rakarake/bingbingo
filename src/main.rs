@@ -1,4 +1,11 @@
-use axum::{http::StatusCode, extract::State,response::Html, routing::get, routing::post, Json, Router};
+use axum::{
+    http::StatusCode,
+    extract::State,
+    routing::get,
+    routing::post,
+    Json,
+    Router
+};
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::collections::HashMap;
@@ -11,8 +18,6 @@ struct AppState {
 
 #[tokio::main]
 async fn main() {
-    // build our application with a route
-    //let app = Router::new().route("/", get(handler));
     let app_state = Arc::new(AppState { rooms: Mutex::new(HashMap::new()) });
     let app = Router::new()
         .nest_service("/", ServeDir::new("public"))
@@ -20,16 +25,11 @@ async fn main() {
         .route("/cards", get(get_cards))
         .with_state(app_state);
 
-    // run it
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
         .await
         .unwrap();
     println!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app).await.unwrap();
-}
-
-async fn handler() -> Html<&'static str> {
-    Html("<h1>Hello, World!</h1>")
 }
 
 async fn post_card(State(state): State<Arc<AppState>>, Json(payload): Json<PostCard>) {
@@ -68,36 +68,4 @@ struct GetCards {
 struct GetCardsResponse {
     cards: HashMap<String, String>,
 }
-
-
-//
-//        // `POST /users` goes to `create_user`
-//        .route("/users", post(create_user));
-//
-//    // run our app with hyper, listening globally on port 3000
-//    let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
-//    axum::serve(listener, app).await.unwrap();
-//}
-//
-//// basic handler that responds with a static string
-//async fn root() -> &'static str {
-//    "Hello, World!"
-//}
-//
-//async fn create_user(
-//    // this argument tells axum to parse the request body
-//    // as JSON into a `CreateUser` type
-//    Json(payload): Json<CreateUser>,
-//) -> (StatusCode, Json<User>) {
-//    // insert your application logic here
-//    let user = User {
-//        id: 1337,
-//        username: payload.username,
-//    };
-//
-//    // this will be converted into a JSON response
-//    // with a status code of `201 Created`
-//    (StatusCode::CREATED, Json(user))
-//}
-// POST /send-card password name card
 
