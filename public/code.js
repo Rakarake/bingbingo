@@ -49,7 +49,7 @@ document.querySelectorAll(".card").forEach((card, i) => {
         }
       }
     }
-    const jsonString = JSON.stringify(state, null, 4);
+    const jsonString = JSON.stringify(state);
     sessionStorage[sessionName] = jsonString;
 
     // Send card to server if specified
@@ -61,7 +61,7 @@ document.querySelectorAll(".card").forEach((card, i) => {
       const body = {
         password: password,
         name: name,
-        card: jsonString,
+        card: JSON.stringify(getState(card)),
       };
       fetch(url, {
         method: "POST",

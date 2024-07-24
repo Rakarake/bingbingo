@@ -23,8 +23,6 @@ this program. If not, see <https://www.gnu.org/licenses/>.
 for the JavaScript code in this page.
 */
 
-console.log("morbius 🤨");
-
 const cardSection = document.querySelector(".card-section");
 const passwordElement = document.querySelector(".password");
 const passwordConfirmElement = document.querySelector(".password-confirm");
@@ -36,16 +34,24 @@ async function backgroundFetching() {
   const url = window.location.href.substring(0, (window.location.href.length-1) - "host/".length)
     + "/api/room/" + passwordElement.value + "/cards";
   //const url = "http://127.0.0.1:3000/api/room/gabagool/cards";
-  console.log(url);
+  console.log("fetching room from", url);
   if (passwordConfirmElement.checked && passwordElement.value != "") {
     const response = await fetch(url);
     if (!response.ok) {
-      throw new Error(`Response status: ${response.status}, URL: ${url}`);
+      console.error(`Response status: ${response.status}, URL: ${url}`);
+      setTimeout(backgroundFetching, 3000);
     }
-    const result = await response.json();
+    let result = "";
+    try {
+      result = await response.json();
+    } catch (error) {
+      //TODO: display that the room is empty
+      setTimeout(backgroundFetching, 3000);
+      return;
+    }
     // Render all cards, create elements if they do not exist
     Object.keys(result.cards).forEach((name) => {
-      console.log(result.cards[name]);
+      console.log("trying name: ", name, "card:", result.cards[name]);
       // TODO: handle badly formated JSON
       try {
         const state = JSON.parse(result.cards[name]);
