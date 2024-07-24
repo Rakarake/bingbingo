@@ -8,6 +8,12 @@ body {
   align-items: center;
 }
 
+.card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
 footer p {
   margin: 5px;
 }

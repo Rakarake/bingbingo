@@ -30,35 +30,44 @@ const passwordElement = document.querySelector(".password");
 const passwordConfirmElement = document.querySelector(".password-confirm");
 
 // Continously fetch the room
-const backgroundFetching = () => {
+async function backgroundFetching() {
   // Cursed, but it works
   // TODO: set up proper api paths
   const url = window.location.href.substring(0, (window.location.href.length-1) - "host/".length)
     + "/api/room/" + passwordElement.value + "/cards";
+  //const url = "http://127.0.0.1:3000/api/room/gabagool/cards";
   console.log(url);
   if (passwordConfirmElement.checked && passwordElement.value != "") {
-    const response = fetch(url);
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}, URL: ${url}`);
     }
-    //response.json().then((result) => {
-    //  // Render all cards, create elements if they do not exist
-    //  Object.keys(result.cards).forEach((name) => {
-    //    const state = result.cards[name];
-    //    let card = cardSection.querySelectorAll(".card").find((card) => card.dataset.name == name);
-    //    if (card == undefined) {
-    //      // Create card element
-    //      card = document.createElement("div");
-    //      const grid = document.createElement("table");
-    //      card.classList.add("card");
-    //      grid.classList.add("grid");
-    //      card.appendChild(grid);
-    //      cardSection.appendChild(card);
-    //    }
-    //    renderCard(card, state);
-    //  });
-    //  setTimeout(backgroundFetching, 3000);
-    //});
+    const result = await response.json();
+    // Render all cards, create elements if they do not exist
+    Object.keys(result.cards).forEach((name) => {
+      console.log(result.cards[name]);
+      // TODO: handle badly formated JSON
+      try {
+        const state = JSON.parse(result.cards[name]);
+        console.log("parsed!", state);
+        let card = Array.from(cardSection.querySelectorAll(".card")).find((card) => card.dataset.name == name);
+        if (card == undefined) {
+          // Create card element
+          card = document.createElement("div");
+          card.dataset.name = name;
+          const grid = document.createElement("table");
+          card.classList.add("card");
+          grid.classList.add("grid");
+          card.appendChild(grid);
+          cardSection.appendChild(card);
+        }
+        setState(card, state);
+        render(card);
+        console.log("rendered!");
+      } catch (error) {
+        console.error(error);
+      }
+    });
     setTimeout(backgroundFetching, 3000);
   } else {
     setTimeout(backgroundFetching, 3000);

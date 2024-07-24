@@ -6,11 +6,6 @@
   text-align: center;
 }
 
-.card {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
 .grid {
   margin: 20px; /* Optional: Add some spacing between elements */
 }
