@@ -16,7 +16,8 @@ async fn main() {
     let app_state = Arc::new(AppState { rooms: Mutex::new(HashMap::new()) });
     let app = Router::new()
         .nest_service("/", ServeDir::new("public"))
-        .route("/send-card", post(send_card))
+        .route("/card", post(post_card))
+        .route("/cards", get(get_cards))
         .with_state(app_state);
 
     // run it
@@ -31,7 +32,7 @@ async fn handler() -> Html<&'static str> {
     Html("<h1>Hello, World!</h1>")
 }
 
-async fn send_card(State(state): State<Arc<AppState>>, Json(payload): Json<SendCard>) -> StatusCode {
+async fn post_card(State(state): State<Arc<AppState>>, Json(payload): Json<PostCard>) {
     let mut rooms = state.rooms.lock().unwrap();
     if let Some(room) = rooms.get_mut(&payload.password) {
         room.insert(payload.name, payload.card);
@@ -40,18 +41,22 @@ async fn send_card(State(state): State<Arc<AppState>>, Json(payload): Json<SendC
         new_room.insert(payload.name, payload.card);
         rooms.insert(payload.password, new_room);
     }
-    
-    StatusCode::IM_A_TEAPOT
-}
-
-async fn get_cards(State(state): State<Arc<AppState>>, Json(payload): Json<SendCards>) -> (StatusCode, SendCard) {
 }
 
 #[derive(Deserialize)]
-struct get_cards {
+struct PostCard {
     password: String,
     name: String,
     card: String,
+}
+
+async fn get_cards(State(state): State<Arc<AppState>>, Json(payload): Json<GetCards>) -> Result<Json<GetCardsResponse>, StatusCode> {
+    let rooms = state.rooms.lock().unwrap();
+    if let Some(room) = rooms.get(&payload.password) {
+        Ok(Json(GetCardsResponse { cards: room.clone() }))
+    } else {
+        Err(StatusCode::NOT_FOUND)
+    }
 }
 
 #[derive(Deserialize)]
@@ -59,9 +64,9 @@ struct GetCards {
     password: String,
 }
 
-#[derive(Deserialize)]
+#[derive(Serialize)]
 struct GetCardsResponse {
-    cards: String,
+    cards: HashMap<String, String>,
 }
 
 
