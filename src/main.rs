@@ -1,5 +1,4 @@
 use axum::{
-    http::StatusCode,
     extract::{
         State,
         Path,
@@ -26,7 +25,10 @@ async fn main() {
     pretty_env_logger::init();
 
     let app_state = Arc::new(AppState { rooms: Mutex::new(HashMap::new()) });
-    let static_file_service = ServeDir::new("public")
+    let static_files = std::env::var("SERVE_DIR").unwrap_or("public".to_string());
+    info!("serving dir: {:?}", static_files);
+    let static_file_service = 
+        ServeDir::new(static_files)
         .not_found_service(tower_http::services::ServeFile::new("public/page404.html"));
     let app = Router::new()
         .route("/api/room/:password/cards", get(get_cards))
