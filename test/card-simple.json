@@ -1,0 +1,151 @@
+{
+    "size": "5",
+    "items": [
+        {
+            "text": "1",
+            "crossed": "true"
+        },
+        {
+            "text": "gooby dooby dooba eeeeeeeeeeee\n",
+            "crossed": false
+        },
+        {
+            "text": "muh",
+            "crossed": false
+        },
+        {
+            "text": "1",
+            "crossed": false
+        },
+        {
+            "text": "gambit",
+            "crossed": "true"
+        },
+        {
+            "text": "1",
+            "crossed": "true"
+        },
+        {
+            "text": "fleas",
+            "crossed": false
+        },
+        {
+            "text": "1",
+            "crossed": false
+        },
+        {
+            "text": "1",
+            "crossed": "true"
+        },
+        {
+            "text": "mogis",
+            "crossed": false
+        },
+        {
+            "text": "1",
+            "crossed": "true"
+        },
+        {
+            "text": "1",
+            "crossed": "true"
+        },
+        {
+            "text": "lerp\n",
+            "crossed": false
+        },
+        {
+            "text": "1",
+            "crossed": false
+        },
+        {
+            "text": "1",
+            "crossed": "true"
+        },
+        {
+            "text": "1",
+            "crossed": "true"
+        },
+        {
+            "text": "1",
+            "crossed": "true"
+        },
+        {
+            "text": "1",
+            "crossed": "true"
+        },
+        {
+            "text": "1",
+            "crossed": false
+        },
+        {
+            "text": "1",
+            "crossed": false
+        },
+        {
+            "text": "1",
+            "crossed": "true"
+        },
+        {
+            "text": "flerp",
+            "crossed": "false"
+        },
+        {
+            "text": "1",
+            "crossed": "true"
+        },
+        {
+            "text": "1",
+            "crossed": false
+        },
+        {
+            "text": "1",
+            "crossed": false
+        }
+    ],
+    "tolerance": "3",
+    "style": {
+        "grid": {
+            "pixelSize": "500",
+            "padding": "10",
+            "backgroundColor": "#fff6e0",
+            "backgroundImage": "",
+            "borderSpacing": "10",
+            "borderStyle": "dashed",
+            "borderWidth": "5",
+            "borderColor": "#2ec27e",
+            "borderRadius": "5"
+        },
+        "item": {
+            "padding": "3",
+            "fontSize": "18",
+            "fontFamily": {
+                "isData": false,
+                "url": "sans-serif"
+            },
+            "backgroundColor": "#f9f06b",
+            "backgroundImage": {
+                "isData": false,
+                "url": ""
+            },
+            "borderStyle": "solid",
+            "borderColor": "#b5835a",
+            "borderRadius": "5"
+        },
+        "crossed": {
+            "padding": "3",
+            "fontSize": "18",
+            "fontFamily": {
+                "isData": false,
+                "url": "sans-serif"
+            },
+            "backgroundColor": "#ffffff",
+            "backgroundImage": {
+                "isData": false,
+                "url": "cross.svg"
+            },
+            "borderStyle": "solid",
+            "borderColor": "#b5835a",
+            "borderRadius": "5"
+        }
+    }
+}

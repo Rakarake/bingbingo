@@ -133,10 +133,16 @@ function cToDOMStyleFile(card, name, sName, e) {
       fileUrl = URL.createObjectURL(inMemoryFile);
       cachedFiles.set(hash, fileUrl);
     }
-    e.style[name] = "url('" + fileUrl + "')";
+    const newUrl = `url("${fileUrl}")`;
+    console.log("?goo: ", e.style[name], newUrl);
+    if (newUrl != e.style[name]) {
+      console.log("gooo");
+      e.style[name] = newUrl;
+    }
+    console.log("not gooo");
   }
   else {
-    e.style[name] = "url('" + sObject.url + "')";
+    e.style[name] = `url("${sObject.url}")`;
   }
 }
 async function cToDOMStyleFont(card, name, sName, e) {
@@ -157,7 +163,7 @@ async function cToDOMStyleFont(card, name, sName, e) {
       fileUrl = URL.createObjectURL(inMemoryFile);
       cachedFiles.set(hash, fileUrl);
       let custom_font = new FontFace(hashLetterString(hash),
-        "url('" + fileUrl  + "')");
+        `url("${fileUrl}")`);
       const loaded_font = await custom_font.load();
       document.fonts.add(loaded_font);
     }
