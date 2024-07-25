@@ -132,14 +132,12 @@ function cToDOMStyleFile(card, name, sName, e) {
       const inMemoryFile = dataURLtoFile(sObject.url, "bigfile");
       fileUrl = URL.createObjectURL(inMemoryFile);
       cachedFiles.set(hash, fileUrl);
+      sObject.hash = hash;
     }
     const newUrl = `url("${fileUrl}")`;
-    console.log("?goo: ", e.style[name], newUrl);
     if (newUrl != e.style[name]) {
-      console.log("gooo");
       e.style[name] = newUrl;
     }
-    console.log("not gooo");
   }
   else {
     e.style[name] = `url("${sObject.url}")`;
