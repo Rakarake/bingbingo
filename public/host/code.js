@@ -62,8 +62,11 @@ async function backgroundFetching() {
           card = document.createElement("div");
           card.dataset.name = name;
           const grid = document.createElement("table");
+          const nameHeader = document.createElement("h2");
+          nameHeader.innerText = name;
           card.classList.add("card");
           grid.classList.add("grid");
+          card.appendChild(nameHeader);
           card.appendChild(grid);
           cardSection.appendChild(card);
         }
