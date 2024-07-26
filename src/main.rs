@@ -28,8 +28,8 @@ async fn main() {
     let static_files = std::env::var("SERVE_DIR").unwrap_or("public".to_string());
     info!("serving dir: {:?}", static_files);
     let static_file_service = 
-        ServeDir::new(static_files)
-        .not_found_service(tower_http::services::ServeFile::new("public/page404.html"));
+        ServeDir::new(static_files.clone())
+        .not_found_service(tower_http::services::ServeFile::new(std::format!("{}/page404.html", static_files)));
     let app = Router::new()
         .route("/api/room/:password/cards", get(get_cards))
         .route("/api/card", post(post_card))

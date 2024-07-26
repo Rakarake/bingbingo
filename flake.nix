@@ -3,11 +3,17 @@
   inputs = {
     flake-utils.url = "github:numtide/flake-utils";
     nixpkgs.url = "nixpkgs/nixos-unstable";
+    rust-overlay = {
+      url = "github:oxalica/rust-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-  outputs = { self, nixpkgs, flake-utils }:
+  outputs = { self, nixpkgs, rust-overlay, flake-utils }:
     flake-utils.lib.eachDefaultSystem (system:
       let
-        pkgs = import nixpkgs { inherit system; };
+        overlays = [ rust-overlay.overlays.default ];
+        pkgs = import nixpkgs { inherit overlays system; };
+        rust = pkgs.rust-bin.stable.latest.default;
       in rec {
         # The rust package, use `nix build` to build
         bingbingoUnwrapped = pkgs.rustPlatform.buildRustPackage {
@@ -33,8 +39,9 @@
         };
 
         devShell = pkgs.mkShell {
-          packages = with pkgs; [ cargo curl ];
+          packages = [ rust pkgs.curl ];
         };
       }
     );
 }
+
