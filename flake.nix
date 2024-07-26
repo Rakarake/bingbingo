@@ -15,7 +15,6 @@
         pkgs = import nixpkgs { inherit overlays system; };
         rust = pkgs.rust-bin.stable.latest.default;
       in rec {
-        # The rust package, use `nix build` to build
         bingbingoUnwrapped = pkgs.rustPlatform.buildRustPackage {
           pname = "bingbingo";
           version = "0.0.1";
@@ -24,6 +23,7 @@
             lockFile = ./Cargo.lock;
           };
         };
+
         defaultPackage = pkgs.stdenv.mkDerivation {
           name = "bingbingo";                                                                          
           src = ./.;
@@ -36,6 +36,22 @@
               --set SERVE_DIR ${self}/public \
               --set RUST_LOG trace
           '';
+        };
+
+        nixosModules.default = {
+          systemd.services.bingbingo = {
+            description = "bingbingo";
+            wantedBy = [ "multi-user.target" ]; 
+            after = [ "network.target" ];
+            serviceConfig = {
+              User = "bingbingo";
+              ExecStart = "${defaultPackage}/bin/bingbingo";
+            };
+          };
+          users.users.bingbingo = {
+            description = "Bingbingo Service";
+            isSystemUser = true;
+          };
         };
 
         devShell = pkgs.mkShell {
