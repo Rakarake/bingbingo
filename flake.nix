@@ -74,6 +74,7 @@
               description = "Bingbingo Service";
               isSystemUser = true;
             };
+            users.groups.bingbingo = {};
           };
         };
 
