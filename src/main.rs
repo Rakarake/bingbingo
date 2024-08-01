@@ -25,7 +25,12 @@ async fn main() {
     pretty_env_logger::init();
 
     let app_state = Arc::new(AppState { rooms: Mutex::new(HashMap::new()) });
-    let static_files = std::env::var("SERVE_DIR").unwrap_or("public".to_string());
+    use std::env::var;
+    let static_files = var("SERVE_DIR").unwrap_or("public".to_string());
+    let port = if let Ok(port_str) = var("PORT") {
+        port_str.parse::<u16>().expect("PORT is malformed")
+    } else { 3000 };
+    let address = var("ADDRESS").unwrap_or("127.0.0.1".to_string());
     info!("serving dir: {:?}", static_files);
     let static_file_service = 
         ServeDir::new(static_files.clone())
@@ -36,7 +41,7 @@ async fn main() {
         .nest_service("/", static_file_service)
         .with_state(app_state);
 
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
+    let listener = tokio::net::TcpListener::bind((address, port))
         .await
         .unwrap();
     println!("listening on http://{}", listener.local_addr().unwrap());

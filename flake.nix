@@ -24,7 +24,7 @@
           };
         };
 
-        defaultPackage = pkgs.stdenv.mkDerivation {
+        bingbingo = pkgs.stdenv.mkDerivation {
           name = "bingbingo";                                                                          
           src = ./.;
           buildInputs = [ pkgs.makeWrapper ];
@@ -37,20 +37,32 @@
               --set RUST_LOG trace
           '';
         };
-
-        nixosModules.default = {
-          systemd.services.bingbingo = {
-            description = "bingbingo";
-            wantedBy = [ "multi-user.target" ]; 
-            after = [ "network.target" ];
-            serviceConfig = {
-              User = "bingbingo";
-              ExecStart = "${defaultPackage}/bin/bingbingo";
-            };
+        defaultPackage = bingbingo;
+        
+        # Big host
+        nixosModules.default = { lib, config, ... }:
+        with lib;
+        let
+          cfg = config.services.bingbingo;
+        in
+        {
+          options.services.bingbingo = {
+            enable = mkEnableOption "The bing bingo";
           };
-          users.users.bingbingo = {
-            description = "Bingbingo Service";
-            isSystemUser = true;
+          config = mkIf cfg.enable {
+            systemd.services.bingbingo = {
+              description = "bingbingo";
+              wantedBy = [ "multi-user.target" ]; 
+              after = [ "network.target" ];
+              serviceConfig = {
+                User = "bingbingo";
+                ExecStart = "${bingbingo}/bin/bingbingo";
+              };
+            };
+            users.users.bingbingo = {
+              description = "Bingbingo Service";
+              isSystemUser = true;
+            };
           };
         };
 
