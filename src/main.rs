@@ -31,15 +31,17 @@ async fn main() {
         port_str.parse::<u16>().expect("PORT is malformed")
     } else { 3000 };
     let address = var("ADDRESS").unwrap_or("127.0.0.1".to_string());
+    let sub_path = var("SUB_PATH").unwrap_or("/".to_string());
     info!("serving dir: {:?}", static_files);
     let static_file_service = 
         ServeDir::new(static_files.clone())
         .not_found_service(tower_http::services::ServeFile::new(std::format!("{}/page404.html", static_files)));
     let app = Router::new()
-        .route("/api/room/:password/cards", get(get_cards))
-        .route("/api/card", post(post_card))
-        .nest_service("/", static_file_service)
-        .with_state(app_state);
+        .nest(&sub_path, Router::new()
+            .route("/api/room/:password/cards", get(get_cards))
+            .route("/api/card", post(post_card))
+            .nest_service("/", static_file_service)
+            .with_state(app_state));
 
     let listener = tokio::net::TcpListener::bind((address, port))
         .await

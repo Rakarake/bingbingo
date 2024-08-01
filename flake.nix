@@ -25,19 +25,19 @@
         };
 
         # Function with the derivation as return value
-        bingbingo = { port, address }: pkgs.stdenv.mkDerivation {
+        bingbingo = { port, address, subPath }: pkgs.stdenv.mkDerivation {
           name = "bingbingo";                                                                          
           src = ./.;
           buildInputs = [ pkgs.makeWrapper ];
           installPhase = ''
             mkdir -p $out/bin
-            cp ${bingbingoUnwrapped}/bin/bingbingo $out/bin/
-            # Create a wrapper script to set environment variables
+            cp ${bingbingoUnwrapped}/bin/bingbingo $out/bin/ # Create a wrapper script to set environment variables
             wrapProgram $out/bin/bingbingo \
               --set SERVE_DIR ${self}/public \
               --set RUST_LOG trace \
               --set PORT ${port} \
-              --set ADDRESS ${address}
+              --set ADDRESS ${address} \
+              --set SUB_PATH ${subPath}
           '';
         };
         defaultPackage = bingbingo { port = "80"; address = "localhost"; };
@@ -59,6 +59,10 @@
               type = types.str;
               default = "localhost";
             };
+            subPath = mkOption {
+              type = types.str;
+              default = "/";
+            };
           };
           config = mkIf cfg.enable {
             systemd.services.bingbingo = {
@@ -70,6 +74,7 @@
                 ExecStart = "${bingbingo {
                   port = toString cfg.port;
                   address = cfg.address;
+                  sub_path = cfg.subPath;
                 }}/bin/bingbingo";
               };
             };
