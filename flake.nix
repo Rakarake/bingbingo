@@ -24,7 +24,8 @@
           };
         };
 
-        bingbingo = pkgs.stdenv.mkDerivation {
+        # Function with the derivation as return value
+        bingbingo = { port, address }: pkgs.stdenv.mkDerivation {
           name = "bingbingo";                                                                          
           src = ./.;
           buildInputs = [ pkgs.makeWrapper ];
@@ -35,9 +36,11 @@
             wrapProgram $out/bin/bingbingo \
               --set SERVE_DIR ${self}/public \
               --set RUST_LOG trace
+              --set PORT ${port}
+              --set ADDRESS ${address}
           '';
         };
-        defaultPackage = bingbingo;
+        defaultPackage = bingbingo { port = "80"; address = "localhost"; };
         
         # Big host
         nixosModules.default = { lib, config, ... }:
@@ -48,6 +51,14 @@
         {
           options.services.bingbingo = {
             enable = mkEnableOption "The bing bingo";
+            port = mkOption {
+              type = types.str;
+              default = "80";
+            };
+            address = mkOption {
+              type = types.str;
+              default = "localhost";
+            };
           };
           config = mkIf cfg.enable {
             systemd.services.bingbingo = {
@@ -56,7 +67,7 @@
               after = [ "network.target" ];
               serviceConfig = {
                 User = "bingbingo";
-                ExecStart = "${bingbingo}/bin/bingbingo";
+                ExecStart = "${bingbingo {port=cfg.port; address=cfg.address;}}/bin/bingbingo";
               };
             };
             users.users.bingbingo = {
