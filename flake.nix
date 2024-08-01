@@ -67,7 +67,10 @@
               after = [ "network.target" ];
               serviceConfig = {
                 User = "bingbingo";
-                ExecStart = "${bingbingo {port=cfg.port; address=cfg.address;}}/bin/bingbingo";
+                ExecStart = "${bingbingo {
+                  port = toString cfg.port;
+                  address = cfg.address;
+                }}/bin/bingbingo";
               };
             };
             users.users.bingbingo = {
