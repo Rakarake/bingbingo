@@ -11,9 +11,10 @@ use axum::{
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::collections::HashMap;
-use tower_http::services::ServeDir;
+use tower_http::services::{ServeDir, ServeFile};
 use serde::{Deserialize, Serialize};
 use log::info;
+use std::format;
 
 struct AppState {
     rooms: Mutex<HashMap<String, HashMap<String, String>>>,
@@ -35,7 +36,9 @@ async fn main() {
     info!("serving dir: {:?}", static_files);
     let static_file_service = 
         ServeDir::new(static_files.clone())
-        .not_found_service(tower_http::services::ServeFile::new(std::format!("{}/page404.html", static_files)));
+        .not_found_service(ServeFile::new(format!("{}/page404.html", static_files)))
+        .append_index_html_on_directories(true);
+        
     let app = Router::new()
         .nest(&sub_path, Router::new()
             .route("/api/room/:password/cards", get(get_cards))
