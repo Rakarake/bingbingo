@@ -53,7 +53,7 @@
             enable = mkEnableOption "The bing bingo";
             port = mkOption {
               type = types.port;
-              default = "80";
+              default = 80;
             };
             address = mkOption {
               type = types.str;
