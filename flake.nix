@@ -74,7 +74,7 @@
                 ExecStart = "${bingbingo {
                   port = toString cfg.port;
                   address = cfg.address;
-                  sub_path = cfg.subPath;
+                  subPath = cfg.subPath;
                 }}/bin/bingbingo";
               };
             };
