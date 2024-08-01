@@ -35,8 +35,8 @@
             # Create a wrapper script to set environment variables
             wrapProgram $out/bin/bingbingo \
               --set SERVE_DIR ${self}/public \
-              --set RUST_LOG trace
-              --set PORT ${port}
+              --set RUST_LOG trace \
+              --set PORT ${port} \
               --set ADDRESS ${address}
           '';
         };
