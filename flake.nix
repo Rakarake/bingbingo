@@ -73,6 +73,7 @@
             users.users.bingbingo = {
               description = "Bingbingo Service";
               isSystemUser = true;
+              group = "bingbingo";
             };
             users.groups.bingbingo = {};
           };
