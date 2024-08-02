@@ -33,14 +33,14 @@
             mkdir -p $out/bin
             cp ${bingbingoUnwrapped}/bin/bingbingo $out/bin/ # Create a wrapper script to set environment variables
             wrapProgram $out/bin/bingbingo \
-              --set SERVE_DIR ${self}/public \
               --set RUST_LOG trace \
-              --set PORT ${port} \
-              --set ADDRESS ${address} \
-              --set SUB_PATH ${subPath}
+              --set BINGBINGO_SERVE_DIR ${self}/public \
+              --set BINGBINGO_PORT ${port} \
+              --set BINGBINGO_ADDRESS ${address} \
+              --set BINGBINGO_SUB_PATH ${subPath}
           '';
         };
-        defaultPackage = bingbingo { port = "80"; address = "localhost"; };
+        defaultPackage = bingbingo { port = "3000"; address = "localhost"; subPath = ""; };
         
         # Big host
         nixosModules.default = { lib, config, ... }:
