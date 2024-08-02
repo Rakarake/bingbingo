@@ -61,7 +61,7 @@
             };
             subPath = mkOption {
               type = types.str;
-              default = "/";
+              default = "";
             };
           };
           config = mkIf cfg.enable {
