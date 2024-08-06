@@ -2,6 +2,7 @@ use axum::{
     extract::{
         State,
         Path,
+        DefaultBodyLimit,
     },
     routing::get,
     routing::post,
@@ -45,13 +46,17 @@ async fn main() {
         .append_index_html_on_directories(true)
         .not_found_service(ServeFile::new(format!("{}/page404.html", served_dir)));
 
+    // Allow for packets up to 10 MiB
+    let maximum_packet_size = (2 << 20) * 10;
+
     let app = Router::new()
         .nest_service(&format!("/{}", sub_path), static_file_service)
         .nest(&format!("/{}", sub_path), Router::new()
           .route("/api/room/:password/cards", get(get_cards))
           .route("/api/card", post(post_card))
           .with_state(app_state)
-        );
+        )
+        .layer(DefaultBodyLimit::max(maximum_packet_size));
 
     let listener = tokio::net::TcpListener::bind((address, port))
         .await
